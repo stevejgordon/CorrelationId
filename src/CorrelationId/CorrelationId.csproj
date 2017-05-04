@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard1.3</TargetFramework>
+    <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+    <Authors>Steve Gordon</Authors>
+    <Company />
+    <Product>CorrelationId Middleware for ASP.NET Core</Product>
+    <Description>ASP.NET Core correlation ID middleware which synchronises the TraceIdentifier with a correlation ID header.</Description>
+    <Copyright>© Steve Gordon. All rights reserved.</Copyright>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>aspnetcore;correlationid</PackageTags>
+    <NeutralLanguage>en</NeutralLanguage>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="1.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="1.1.1" />
+  </ItemGroup>
+
+</Project>
