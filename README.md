@@ -6,7 +6,7 @@ This is intended for cases where you have multiple API services that may pass a 
 
 The TraceIdentifier on the HttpContext will be used for new requests and additionally set a header on the response. In cases where the incoming request includes an existing correlation ID in the header, the TraceIdentifier will be updated to that ID. This allows logging and diagnostics to be correlated for a single user transaction and to track the path of a user request through multiple API services.
 
-Examples in the [wiki] (https://github.com/stevejgordon/CorrelationId/wiki).
+Examples in the [wiki](https://github.com/stevejgordon/CorrelationId/wiki).
 
 ## Installation
 
