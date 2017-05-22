@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
 using System;
 using System.Threading.Tasks;
 
@@ -34,9 +35,7 @@ namespace CorrelationId
         /// <returns></returns>
         public Task Invoke(HttpContext context)
         {
-            var correlationId = context.Request.Headers[_options.Header];
-
-            if (!string.IsNullOrEmpty(correlationId))
+            if (context.Request.Headers.TryGetValue(_options.Header, out StringValues correlationId))
             {
                 context.TraceIdentifier = correlationId;
             }
