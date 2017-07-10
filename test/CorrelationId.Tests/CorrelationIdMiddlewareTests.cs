@@ -83,6 +83,7 @@ namespace CorrelationId.Tests
         public async Task CorrelationId_SetToCorrelationIdFromRequestHeader()
         {
             var expectedHeaderName = new CorrelationIdOptions().Header;
+            var expectedHeaderValue = "123456";
 
             var builder = new WebHostBuilder()
                .Configure(app => app.UseCorrelationId());
@@ -90,13 +91,13 @@ namespace CorrelationId.Tests
             var server = new TestServer(builder);
 
             var request = new HttpRequestMessage();
-            request.Headers.Add(expectedHeaderName, "123456");
+            request.Headers.Add(expectedHeaderName, expectedHeaderValue);
 
             var response = await server.CreateClient().SendAsync(request);
                         
             var header = response.Headers.GetValues(expectedHeaderName);
 
-            Assert.NotNull(header);
+            Assert.Single(header, expectedHeaderValue);
         }
     }
 }
