@@ -1,5 +1,8 @@
 # Correlation ID Middleware
 
+[![NuGet](https://img.shields.io/nuget/v/CorrelationId.svg)](https://www.nuget.org/packages/CorrelationId)
+[![NuGet](https://img.shields.io/nuget/dt/CorrelationId.svg)](https://www.nuget.org/packages/CorrelationId)
+
 This repo contains middleware for syncing a TraceIdentity (correlation ID) across ASP.NET Core APIs.
 
 This is intended for cases where you have multiple API services that may pass a single user request (transaction) through a chain of APIs in order to satisfy the final result. For example, a front end API may be called from a browser, which then in turn calls a backend API to gather some required data.
