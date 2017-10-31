@@ -7,10 +7,11 @@
     <Company />
     <Product>CorrelationId Middleware for ASP.NET Core</Product>
     <Description>ASP.NET Core correlation ID middleware which synchronises the TraceIdentifier with a correlation ID header.</Description>
-    <Copyright>© Steve Gordon. All rights reserved.</Copyright>
+    <Copyright>© Steve Gordon 2017. All rights reserved.</Copyright>
     <RepositoryType>git</RepositoryType>
     <PackageTags>aspnetcore;correlationid</PackageTags>
     <NeutralLanguage>en</NeutralLanguage>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
