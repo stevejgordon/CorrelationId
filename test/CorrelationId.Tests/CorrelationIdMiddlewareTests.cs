@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using System.Collections.Generic;
@@ -27,6 +28,23 @@ namespace CorrelationId.Tests
         }
 
         [Fact]
+        public async Task DoesNotThrowException_WhenOptionSetToTrue_IfHeaderIsAlreadySet()
+        {
+            var builder = new WebHostBuilder()
+                .Configure(app =>
+                {
+                    app.UseCorrelationId();
+                    app.UseCorrelationId(); // header will already be set on this second use of the middleware
+                });
+
+            var server = new TestServer(builder);
+
+            await server.CreateClient().GetAsync("");
+
+            // Note: This test will only fail if the middleware is causing an exception by trying to set a response header which already exists.
+        }
+
+        [Fact]
         public async Task DoesNotReturnCorrelationIdInResponseHeader_WhenOptionSetToFalse()
         {
             var options = new CorrelationIdOptions { IncludeInResponse = false };
@@ -38,7 +56,7 @@ namespace CorrelationId.Tests
 
             var response = await server.CreateClient().GetAsync("");
 
-            var headerExists = response.Headers.TryGetValues(options.Header, out IEnumerable<string> headerValue);
+            var headerExists = response.Headers.TryGetValues(options.Header, out IEnumerable<string> _);
 
             Assert.False(headerExists);
         }

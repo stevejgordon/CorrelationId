@@ -18,14 +18,8 @@ namespace CorrelationId
         /// <param name="options">The configuration options.</param>
         public CorrelationIdMiddleware(RequestDelegate next, IOptions<CorrelationIdOptions> options)
         {
-            if (options == null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
-
             _next = next ?? throw new ArgumentNullException(nameof(next));
-
-            _options = options.Value;
+            _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
         }
 
         /// <summary>
@@ -45,7 +39,11 @@ namespace CorrelationId
                 // apply the correlation ID to the response header for client side tracking
                 context.Response.OnStarting(() =>
                 {
-                    context.Response.Headers.Add(_options.Header, new[] { context.TraceIdentifier });
+                    if (!context.Response.Headers.ContainsKey(_options.Header))
+                    {
+                        context.Response.Headers.Add(_options.Header, new[] { context.TraceIdentifier });
+                    }
+                   
                     return Task.CompletedTask;
                 });
             }
