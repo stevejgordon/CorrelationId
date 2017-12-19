@@ -21,7 +21,7 @@ namespace CorrelationId
                 throw new ArgumentNullException(nameof(app));
             }
 
-            return app.UseMiddleware<CorrelationIdMiddleware>();
+            return app.UseCorrelationId(new CorrelationIdOptions());
         }
 
         /// <summary>
@@ -59,6 +59,11 @@ namespace CorrelationId
             if (options == null)
             {
                 throw new ArgumentNullException(nameof(options));
+            }
+
+            if (app.ApplicationServices.GetService(typeof(ICorrelationContextFactory)) == null)
+            {
+                throw new InvalidOperationException("Unable to find the required services. You must call the AddCorrelationId method in ConfigureServices in the application startup code.");
             }
 
             return app.UseMiddleware<CorrelationIdMiddleware>(Options.Create(options));

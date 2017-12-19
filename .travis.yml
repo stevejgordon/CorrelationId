@@ -1,7 +1,9 @@
 language: csharp
 dist: trusty
-sudo: required
 mono: none
-dotnet: 1.0.1
+dotnet: 2.0.0
+install:
+- dotnet restore
 script:
-  - ./build.sh --quiet verify
+- dotnet build
+- dotnet test test/CorrelationId.Tests/CorrelationId.Tests.csproj
