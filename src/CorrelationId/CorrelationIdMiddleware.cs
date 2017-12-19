@@ -26,13 +26,16 @@ namespace CorrelationId
         /// Processes a request to synchronise TraceIdentifier and Correlation ID headers
         /// </summary>
         /// <param name="context"></param>
+        /// <param name="correlationContextFactory"></param>
         /// <returns></returns>
-        public Task Invoke(HttpContext context)
+        public async Task Invoke(HttpContext context, ICorrelationContextFactory correlationContextFactory)
         {
             if (context.Request.Headers.TryGetValue(_options.Header, out StringValues correlationId))
             {
                 context.TraceIdentifier = correlationId;
             }
+
+            correlationContextFactory.Create(context.TraceIdentifier);
 
             if (_options.IncludeInResponse)
             {
@@ -48,7 +51,9 @@ namespace CorrelationId
                 });
             }
 
-            return _next(context);
+            await _next(context);
+
+            correlationContextFactory.Dispose();
         }
     }
 }

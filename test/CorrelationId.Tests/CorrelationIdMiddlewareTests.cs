@@ -1,4 +1,3 @@
-using System;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using System.Collections.Generic;
@@ -14,7 +13,8 @@ namespace CorrelationId.Tests
         public async Task ReturnsCorrelationIdInResponseHeader_WhenOptionSetToTrue()
         {
             var builder = new WebHostBuilder()
-               .Configure(app => app.UseCorrelationId());
+               .Configure(app => app.UseCorrelationId())
+               .ConfigureServices(sc => sc.AddCorrelationId());
 
             var server = new TestServer(builder);
 
@@ -24,7 +24,7 @@ namespace CorrelationId.Tests
 
             var header = response.Headers.GetValues(expectedHeaderName);
 
-            Assert.NotNull(header);            
+            Assert.NotNull(header);
         }
 
         [Fact]
@@ -35,7 +35,8 @@ namespace CorrelationId.Tests
                 {
                     app.UseCorrelationId();
                     app.UseCorrelationId(); // header will already be set on this second use of the middleware
-                });
+                })
+                .ConfigureServices(sc => sc.AddCorrelationId());
 
             var server = new TestServer(builder);
 
@@ -50,7 +51,8 @@ namespace CorrelationId.Tests
             var options = new CorrelationIdOptions { IncludeInResponse = false };
 
             var builder = new WebHostBuilder()
-               .Configure(app => app.UseCorrelationId(options));
+               .Configure(app => app.UseCorrelationId(options))
+               .ConfigureServices(sc => sc.AddCorrelationId());
 
             var server = new TestServer(builder);
 
@@ -69,7 +71,8 @@ namespace CorrelationId.Tests
             var options = new CorrelationIdOptions { Header = customHeader };
 
             var builder = new WebHostBuilder()
-               .Configure(app => app.UseCorrelationId(options));
+               .Configure(app => app.UseCorrelationId(options))
+               .ConfigureServices(sc => sc.AddCorrelationId());
 
             var server = new TestServer(builder);
 
@@ -86,7 +89,8 @@ namespace CorrelationId.Tests
             const string customHeader = "X-Test-Header";
 
             var builder = new WebHostBuilder()
-               .Configure(app => app.UseCorrelationId(customHeader));
+               .Configure(app => app.UseCorrelationId(customHeader))
+               .ConfigureServices(sc => sc.AddCorrelationId());
 
             var server = new TestServer(builder);
 
@@ -104,7 +108,8 @@ namespace CorrelationId.Tests
             var expectedHeaderValue = "123456";
 
             var builder = new WebHostBuilder()
-               .Configure(app => app.UseCorrelationId());
+               .Configure(app => app.UseCorrelationId())
+               .ConfigureServices(sc => sc.AddCorrelationId());
 
             var server = new TestServer(builder);
 
@@ -112,7 +117,7 @@ namespace CorrelationId.Tests
             request.Headers.Add(expectedHeaderName, expectedHeaderValue);
 
             var response = await server.CreateClient().SendAsync(request);
-                        
+
             var header = response.Headers.GetValues(expectedHeaderName);
 
             Assert.Single(header, expectedHeaderValue);
