@@ -5,12 +5,12 @@ using System;
 namespace CorrelationId
 {
     /// <summary>
-    /// Extension methods for the CorrelationIdMiddleware
+    /// Extension methods for the CorrelationIdMiddleware.
     /// </summary>
     public static class CorrelationIdExtensions
     {
         /// <summary>
-        /// Enables correlation IDs for the request
+        /// Enables correlation IDs for the request.
         /// </summary>
         /// <param name="app"></param>
         /// <returns></returns>
@@ -25,7 +25,7 @@ namespace CorrelationId
         }
 
         /// <summary>
-        /// Enables correlation IDs for the request
+        /// Enables correlation IDs for the request.
         /// </summary>
         /// <param name="app"></param>
         /// <param name="header">The header field name to use for the correlation ID.</param>
@@ -44,7 +44,7 @@ namespace CorrelationId
         }
 
         /// <summary>
-        /// Enables correlation IDs for the request
+        /// Enables correlation IDs for the request.
         /// </summary>
         /// <param name="app"></param>
         /// <param name="options"></param>

@@ -1,5 +1,6 @@
 ﻿namespace CorrelationId
 {
+    /// <inheritdoc />
     public class CorrelationContextFactory : ICorrelationContextFactory
     {
         private readonly ICorrelationContextAccessor _correlationContextAccessor;
@@ -9,6 +10,7 @@
             _correlationContextAccessor = correlationContextAccessor;
         }
 
+        /// <inheritdoc />
         public CorrelationContext Create(string correlationId)
         {
             var correlationContext = new CorrelationContext(correlationId);
@@ -21,6 +23,7 @@
             return correlationContext;
         }
 
+        /// <inheritdoc />
         public void Dispose()
         {
             if (_correlationContextAccessor != null)

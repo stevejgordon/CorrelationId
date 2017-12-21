@@ -2,6 +2,7 @@
 
 namespace CorrelationId
 {
+    /// <inheritdoc />
     public class CorrelationContextAccessor : ICorrelationContextAccessor
     {
         private static AsyncLocal<CorrelationContext> _correlationContext = new AsyncLocal<CorrelationContext>();

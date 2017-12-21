@@ -2,9 +2,12 @@
 
 namespace CorrelationId
 {
+    /// <summary>
+    /// Provides access to per request correlation properties.
+    /// </summary>
     public class CorrelationContext
     {
-        public CorrelationContext(string correlationId)
+        internal CorrelationContext(string correlationId)
         {
             if (string.IsNullOrEmpty(correlationId))
                 throw new ArgumentNullException(nameof(correlationId));
@@ -12,6 +15,9 @@ namespace CorrelationId
             CorrelationId = correlationId;
         }
 
+        /// <summary>
+        /// The Correlation ID which is applicable to the current request.
+        /// </summary>
         public string CorrelationId { get; }
     }
 }
