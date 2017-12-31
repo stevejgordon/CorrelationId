@@ -1,9 +1,12 @@
-using System;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Xunit;
 
 namespace CorrelationId.Tests
@@ -14,7 +17,8 @@ namespace CorrelationId.Tests
         public async Task ReturnsCorrelationIdInResponseHeader_WhenOptionSetToTrue()
         {
             var builder = new WebHostBuilder()
-               .Configure(app => app.UseCorrelationId());
+               .Configure(app => app.UseCorrelationId())
+               .ConfigureServices(sc => sc.AddCorrelationId());
 
             var server = new TestServer(builder);
 
@@ -24,7 +28,7 @@ namespace CorrelationId.Tests
 
             var header = response.Headers.GetValues(expectedHeaderName);
 
-            Assert.NotNull(header);            
+            Assert.NotNull(header);
         }
 
         [Fact]
@@ -35,7 +39,8 @@ namespace CorrelationId.Tests
                 {
                     app.UseCorrelationId();
                     app.UseCorrelationId(); // header will already be set on this second use of the middleware
-                });
+                })
+                .ConfigureServices(sc => sc.AddCorrelationId());
 
             var server = new TestServer(builder);
 
@@ -50,7 +55,8 @@ namespace CorrelationId.Tests
             var options = new CorrelationIdOptions { IncludeInResponse = false };
 
             var builder = new WebHostBuilder()
-               .Configure(app => app.UseCorrelationId(options));
+               .Configure(app => app.UseCorrelationId(options))
+               .ConfigureServices(sc => sc.AddCorrelationId());
 
             var server = new TestServer(builder);
 
@@ -69,7 +75,8 @@ namespace CorrelationId.Tests
             var options = new CorrelationIdOptions { Header = customHeader };
 
             var builder = new WebHostBuilder()
-               .Configure(app => app.UseCorrelationId(options));
+               .Configure(app => app.UseCorrelationId(options))
+               .ConfigureServices(sc => sc.AddCorrelationId());
 
             var server = new TestServer(builder);
 
@@ -86,7 +93,8 @@ namespace CorrelationId.Tests
             const string customHeader = "X-Test-Header";
 
             var builder = new WebHostBuilder()
-               .Configure(app => app.UseCorrelationId(customHeader));
+               .Configure(app => app.UseCorrelationId(customHeader))
+               .ConfigureServices(sc => sc.AddCorrelationId());
 
             var server = new TestServer(builder);
 
@@ -101,10 +109,11 @@ namespace CorrelationId.Tests
         public async Task CorrelationId_SetToCorrelationIdFromRequestHeader()
         {
             var expectedHeaderName = new CorrelationIdOptions().Header;
-            var expectedHeaderValue = "123456";
+            const string expectedHeaderValue = "123456";
 
             var builder = new WebHostBuilder()
-               .Configure(app => app.UseCorrelationId());
+               .Configure(app => app.UseCorrelationId())
+               .ConfigureServices(sc => sc.AddCorrelationId());
 
             var server = new TestServer(builder);
 
@@ -112,10 +121,156 @@ namespace CorrelationId.Tests
             request.Headers.Add(expectedHeaderName, expectedHeaderValue);
 
             var response = await server.CreateClient().SendAsync(request);
-                        
+
             var header = response.Headers.GetValues(expectedHeaderName);
 
             Assert.Single(header, expectedHeaderValue);
+        }
+
+        [Fact]
+        public async Task CorrelationId_ReturnedCorrectlyFromSingletonService()
+        {
+            var expectedHeaderName = new CorrelationIdOptions().Header;
+
+            var builder = new WebHostBuilder()
+                .Configure(app =>
+                {
+                    app.UseCorrelationId();
+                    app.Run(async rd =>
+                    {
+                        var singleton = app.ApplicationServices.GetService(typeof(SingletonClass)) as SingletonClass;
+                        var scoped = app.ApplicationServices.GetService(typeof(ScopedClass)) as ScopedClass;
+
+                        var data = Encoding.UTF8.GetBytes(singleton?.GetCorrelationFromScoped + "|" + scoped?.GetCorrelationFromScoped);
+
+                        await rd.Response.Body.WriteAsync(data, 0, data.Length);
+                    });
+                })
+                .ConfigureServices(sc =>
+                {
+                    sc.AddCorrelationId();
+                    sc.TryAddSingleton<SingletonClass>();
+                    sc.TryAddSingleton<ScopedClass>();
+                });
+
+            var server = new TestServer(builder);
+
+            // compare that first request matches the header and the scoped value
+            var request = new HttpRequestMessage();
+
+            var response = await server.CreateClient().SendAsync(request);
+
+            var header = response.Headers.GetValues(expectedHeaderName).FirstOrDefault();
+
+            var content = await response.Content.ReadAsStringAsync();
+            var splitContent = content.Split('|');
+
+            Assert.Equal(header, splitContent[0]);
+            Assert.Equal(splitContent[0], splitContent[1]);
+
+            // compare that second request matches the header and the scoped value
+            var request2 = new HttpRequestMessage();
+
+            var response2 = await server.CreateClient().SendAsync(request2);
+
+            var header2 = response2.Headers.GetValues(expectedHeaderName).FirstOrDefault();
+
+            var content2 = await response2.Content.ReadAsStringAsync();
+            var splitContent2 = content2.Split('|');
+
+            Assert.Equal(header2, splitContent2[0]);
+            Assert.Equal(splitContent2[0], splitContent2[1]);
+        }
+
+        [Fact]
+        public async Task CorrelationId_ReturnedCorrectlyFromTransientService()
+        {
+            var expectedHeaderName = new CorrelationIdOptions().Header;
+
+            var builder = new WebHostBuilder()
+                .Configure(app =>
+                {
+                    app.UseCorrelationId();
+                    app.Run(async rd =>
+                    {
+                        var transient = app.ApplicationServices.GetService(typeof(TransientClass)) as TransientClass;
+                        var scoped = app.ApplicationServices.GetService(typeof(ScopedClass)) as ScopedClass;
+
+                        var data = Encoding.UTF8.GetBytes(transient?.GetCorrelationFromScoped + "|" + scoped?.GetCorrelationFromScoped);
+
+                        await rd.Response.Body.WriteAsync(data, 0, data.Length);
+                    });
+                })
+                .ConfigureServices(sc =>
+                {
+                    sc.AddCorrelationId();
+                    sc.TryAddSingleton<TransientClass>();
+                    sc.TryAddSingleton<ScopedClass>();
+                });
+
+            var server = new TestServer(builder);
+
+            // compare that first request matches the header and the scoped value
+            var request = new HttpRequestMessage();
+
+            var response = await server.CreateClient().SendAsync(request);
+
+            var header = response.Headers.GetValues(expectedHeaderName).FirstOrDefault();
+
+            var content = await response.Content.ReadAsStringAsync();
+            var splitContent = content.Split('|');
+
+            Assert.Equal(header, splitContent[0]);
+            Assert.Equal(splitContent[0], splitContent[1]);
+
+            // compare that second request matches the header and the scoped value
+            var request2 = new HttpRequestMessage();
+
+            var response2 = await server.CreateClient().SendAsync(request2);
+
+            var header2 = response2.Headers.GetValues(expectedHeaderName).FirstOrDefault();
+
+            var content2 = await response2.Content.ReadAsStringAsync();
+            var splitContent2 = content2.Split('|');
+
+            Assert.Equal(header2, splitContent2[0]);
+            Assert.Equal(splitContent2[0], splitContent2[1]);
+        }
+
+        private class SingletonClass
+        {
+            private readonly ICorrelationContextAccessor _correlationContext;
+
+            public SingletonClass(ICorrelationContextAccessor correlationContext)
+            {
+                _correlationContext = correlationContext;
+            }
+
+            public string GetCorrelationFromScoped => _correlationContext.CorrelationContext.CorrelationId;
+        }
+
+        private class ScopedClass
+        {
+            private readonly ICorrelationContextAccessor _correlationContext;
+
+            public ScopedClass(ICorrelationContextAccessor correlationContext)
+            {
+                _correlationContext = correlationContext;
+            }
+
+            public string GetCorrelationFromScoped => _correlationContext.CorrelationContext.CorrelationId;
+        }
+
+        private class TransientClass
+        {
+            private readonly ICorrelationContextAccessor _correlationContext;
+
+            public TransientClass(ICorrelationContextAccessor correlationContext)
+            {
+                _correlationContext = correlationContext;
+            }
+
+            public string GetCorrelationFromScoped => _correlationContext.CorrelationContext.CorrelationId;
         }
     }
 }

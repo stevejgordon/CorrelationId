@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26403.3
+VisualStudioVersion = 15.0.27130.2003
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CorrelationId", "src\CorrelationId\CorrelationId.csproj", "{865886FC-EBBE-49E1-8F49-FECD0408EF6E}"
 EndProject
@@ -11,14 +11,19 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{EAF27B74-0
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{34C0F65A-8BF2-40DA-B0E7-844930EE2A7B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CorrelationIdSample", "samples\CorrelationIdSample\CorrelationIdSample.csproj", "{3FC0B789-9079-4695-A574-61D96DB74A36}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CorrelationId.Tests", "test\CorrelationId.Tests\CorrelationId.Tests.csproj", "{41035337-9829-4A6A-8EA9-42CC94734CE6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CorrelationId.Tests", "test\CorrelationId.Tests\CorrelationId.Tests.csproj", "{41035337-9829-4A6A-8EA9-42CC94734CE6}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{1DC2BB08-1FE8-43B1-BD2E-F55DA4B54038}"
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
 	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{5961B376-2D2A-441B-BF59-9A797AC9178B}"
+	ProjectSection(SolutionItems) = preProject
+		.travis.yml = .travis.yml
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MvcCorrelationIdSample", "samples\MvcCorrelationIdSample\MvcCorrelationIdSample.csproj", "{CDD51CCC-0764-4C8C-8EA2-2DAAAF4CE0F9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,21 +35,24 @@ Global
 		{865886FC-EBBE-49E1-8F49-FECD0408EF6E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{865886FC-EBBE-49E1-8F49-FECD0408EF6E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{865886FC-EBBE-49E1-8F49-FECD0408EF6E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3FC0B789-9079-4695-A574-61D96DB74A36}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3FC0B789-9079-4695-A574-61D96DB74A36}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3FC0B789-9079-4695-A574-61D96DB74A36}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3FC0B789-9079-4695-A574-61D96DB74A36}.Release|Any CPU.Build.0 = Release|Any CPU
 		{41035337-9829-4A6A-8EA9-42CC94734CE6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{41035337-9829-4A6A-8EA9-42CC94734CE6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{41035337-9829-4A6A-8EA9-42CC94734CE6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{41035337-9829-4A6A-8EA9-42CC94734CE6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CDD51CCC-0764-4C8C-8EA2-2DAAAF4CE0F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CDD51CCC-0764-4C8C-8EA2-2DAAAF4CE0F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CDD51CCC-0764-4C8C-8EA2-2DAAAF4CE0F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CDD51CCC-0764-4C8C-8EA2-2DAAAF4CE0F9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{865886FC-EBBE-49E1-8F49-FECD0408EF6E} = {9A14C73A-D8FC-40C3-81FC-D0687F43FEAF}
-		{3FC0B789-9079-4695-A574-61D96DB74A36} = {34C0F65A-8BF2-40DA-B0E7-844930EE2A7B}
 		{41035337-9829-4A6A-8EA9-42CC94734CE6} = {EAF27B74-0B27-4BEE-9F82-DD5812B21B17}
+		{CDD51CCC-0764-4C8C-8EA2-2DAAAF4CE0F9} = {34C0F65A-8BF2-40DA-B0E7-844930EE2A7B}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C0A37404-C50B-472E-9491-DDE2A4BDA882}
 	EndGlobalSection
 EndGlobal

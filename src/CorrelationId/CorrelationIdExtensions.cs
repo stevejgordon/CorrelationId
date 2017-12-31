@@ -5,12 +5,12 @@ using System;
 namespace CorrelationId
 {
     /// <summary>
-    /// Extension methods for the CorrelationIdMiddleware
+    /// Extension methods for the CorrelationIdMiddleware.
     /// </summary>
     public static class CorrelationIdExtensions
     {
         /// <summary>
-        /// Enables correlation IDs for the request
+        /// Enables correlation IDs for the request.
         /// </summary>
         /// <param name="app"></param>
         /// <returns></returns>
@@ -21,11 +21,11 @@ namespace CorrelationId
                 throw new ArgumentNullException(nameof(app));
             }
 
-            return app.UseMiddleware<CorrelationIdMiddleware>();
+            return app.UseCorrelationId(new CorrelationIdOptions());
         }
 
         /// <summary>
-        /// Enables correlation IDs for the request
+        /// Enables correlation IDs for the request.
         /// </summary>
         /// <param name="app"></param>
         /// <param name="header">The header field name to use for the correlation ID.</param>
@@ -44,7 +44,7 @@ namespace CorrelationId
         }
 
         /// <summary>
-        /// Enables correlation IDs for the request
+        /// Enables correlation IDs for the request.
         /// </summary>
         /// <param name="app"></param>
         /// <param name="options"></param>
@@ -59,6 +59,11 @@ namespace CorrelationId
             if (options == null)
             {
                 throw new ArgumentNullException(nameof(options));
+            }
+
+            if (app.ApplicationServices.GetService(typeof(ICorrelationContextFactory)) == null)
+            {
+                throw new InvalidOperationException("Unable to find the required services. You must call the AddCorrelationId method in ConfigureServices in the application startup code.");
             }
 
             return app.UseMiddleware<CorrelationIdMiddleware>(Options.Create(options));
