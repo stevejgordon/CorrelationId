@@ -35,7 +35,7 @@ namespace CorrelationId
                 context.TraceIdentifier = correlationId;
             }
 
-            correlationContextFactory.Create(context.TraceIdentifier);
+            correlationContextFactory.Create(context.TraceIdentifier, _options.Value.Header);
 
             if (_options.Value.IncludeInResponse)
             {

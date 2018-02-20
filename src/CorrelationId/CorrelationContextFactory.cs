@@ -11,9 +11,9 @@
         }
 
         /// <inheritdoc />
-        public CorrelationContext Create(string correlationId)
+        public CorrelationContext Create(string correlationId, string header)
         {
-            var correlationContext = new CorrelationContext(correlationId);
+            var correlationContext = new CorrelationContext(correlationId, header);
 
             if (_correlationContextAccessor != null)
             {
