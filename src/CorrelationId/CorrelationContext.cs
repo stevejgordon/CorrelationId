@@ -25,7 +25,7 @@ namespace CorrelationId
         public string CorrelationId { get; }
 
         /// <summary>
-        /// The header where is stored the Correlation ID
+        /// The name of the header from which the Correlation ID is read/written.
         /// </summary>
         public string Header { get; }
     }
