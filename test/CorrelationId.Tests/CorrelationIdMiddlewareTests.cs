@@ -6,6 +6,8 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Xunit;
 
@@ -235,6 +237,34 @@ namespace CorrelationId.Tests
 
             Assert.Equal(header2, splitContent2[0]);
             Assert.Equal(splitContent2[0], splitContent2[1]);
+        }
+
+        [Fact]
+        public async Task CorrelationContextIncludesHeaderValue_WhichMatchesTheOriginalOptionsValue()
+        {
+            var options = new CorrelationIdOptions { Header = "custom-header" };
+
+            var builder = new WebHostBuilder()
+                .Configure(app =>
+                {
+                    app.UseCorrelationId(options);
+
+                    app.Use(async (ctx, next) =>
+                    {
+                        var accessor = ctx.RequestServices.GetService<ICorrelationContextAccessor>();
+                        await ctx.Response.WriteAsync(accessor.CorrelationContext.Header);
+                        await next();
+                    });
+                })
+                .ConfigureServices(sc => sc.AddCorrelationId());
+
+            var server = new TestServer(builder);
+
+            var response = await server.CreateClient().GetAsync("");
+
+            var body = await response.Content.ReadAsStringAsync();
+
+            Assert.Equal(body, options.Header);
         }
 
         private class SingletonClass

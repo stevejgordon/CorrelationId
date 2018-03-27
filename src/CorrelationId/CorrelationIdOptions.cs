@@ -8,7 +8,7 @@
         private const string DefaultHeader = "X-Correlation-ID";
 
         /// <summary>
-        /// The header field name where the correlation ID will be stored.
+        /// The name of the header from which the Correlation ID is read/written.
         /// </summary>
         public string Header { get; set; } = DefaultHeader;
 
