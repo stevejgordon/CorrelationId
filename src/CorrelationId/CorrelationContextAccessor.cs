@@ -7,6 +7,7 @@ namespace CorrelationId
     {
         private static AsyncLocal<CorrelationContext> _correlationContext = new AsyncLocal<CorrelationContext>();
 
+        /// <inheritdoc />
         public CorrelationContext CorrelationContext
         {
             get => _correlationContext.Value;
