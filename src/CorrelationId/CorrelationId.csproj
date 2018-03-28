@@ -11,10 +11,18 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>aspnetcore;correlationid</PackageTags>
     <NeutralLanguage>en</NeutralLanguage>
-    <Version>2.0.1</Version>
+    <Version>2.1.0</Version>
     <DocumentationFile>bin\Release\netstandard1.4\CorrelationId.xml</DocumentationFile>
     <PackageProjectUrl>https://github.com/stevejgordon/CorrelationId</PackageProjectUrl>
     <RepositoryUrl>https://github.com/stevejgordon/CorrelationId</RepositoryUrl>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>

@@ -32,7 +32,8 @@ namespace MvcCorrelationIdSample.Controllers
                 $"DirectAccessor={correlation}",
                 $"Transient={_transient.GetCorrelationFromScoped}",
                 $"Scoped={_scoped.GetCorrelationFromScoped}",
-                $"Singleton={_singleton.GetCorrelationFromScoped}"
+                $"Singleton={_singleton.GetCorrelationFromScoped}",
+                $"TraceIdentifier={HttpContext.TraceIdentifier}"
             };
         }
     }

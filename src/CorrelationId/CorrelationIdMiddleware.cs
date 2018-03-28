@@ -2,13 +2,18 @@
 using Microsoft.Extensions.Options;
 using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Primitives;
 
 namespace CorrelationId
 {
+    /// <summary>
+    /// Middleware which attempts to reads / creates a Correlation ID that can then be used in logs and 
+    /// passed to upstream requests.
+    /// </summary>
     public class CorrelationIdMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly IOptions<CorrelationIdOptions> _options;
+        private readonly CorrelationIdOptions _options;
 
         /// <summary>
         /// Creates a new instance of the CorrelationIdMiddleware.
@@ -18,7 +23,7 @@ namespace CorrelationId
         public CorrelationIdMiddleware(RequestDelegate next, IOptions<CorrelationIdOptions> options)
         {
             _next = next ?? throw new ArgumentNullException(nameof(next));
-            _options = options ?? throw new ArgumentNullException(nameof(options));
+            _options = options.Value ?? throw new ArgumentNullException(nameof(options));
         }
 
         /// <summary>
@@ -30,21 +35,24 @@ namespace CorrelationId
         /// <returns></returns>
         public async Task Invoke(HttpContext context, ICorrelationContextFactory correlationContextFactory)
         {
-            if (context.Request.Headers.TryGetValue(_options.Value.Header, out var correlationId))
-            {
+            var correlationIdFoundInRequestHeader = context.Request.Headers.TryGetValue(_options.Header, out var correlationId);
+
+            if (!correlationIdFoundInRequestHeader)
+                correlationId = GenerateCorrelationId(context.TraceIdentifier);
+            
+            if (_options.UpdateTraceIdentifier)
                 context.TraceIdentifier = correlationId;
-            }
+            
+            correlationContextFactory.Create(correlationId, _options.Header);
 
-            correlationContextFactory.Create(context.TraceIdentifier, _options.Value.Header);
-
-            if (_options.Value.IncludeInResponse)
+            if (_options.IncludeInResponse)
             {
                 // apply the correlation ID to the response header for client side tracking
                 context.Response.OnStarting(() =>
                 {
-                    if (!context.Response.Headers.ContainsKey(_options.Value.Header))
+                    if (!context.Response.Headers.ContainsKey(_options.Header))
                     {
-                        context.Response.Headers.Add(_options.Value.Header, context.TraceIdentifier);
+                        context.Response.Headers.Add(_options.Header, correlationId);
                     }
                    
                     return Task.CompletedTask;
@@ -55,5 +63,8 @@ namespace CorrelationId
 
             correlationContextFactory.Dispose();
         }
+
+        private StringValues GenerateCorrelationId(string traceIdentifier) => 
+            _options.UseGuidForCorrelationId || string.IsNullOrEmpty(traceIdentifier) ? Guid.NewGuid().ToString() : traceIdentifier;
     }
 }
