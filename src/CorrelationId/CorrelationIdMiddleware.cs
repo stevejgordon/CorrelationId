@@ -32,17 +32,13 @@ namespace CorrelationId
         /// </summary>
         /// <param name="context">The <see cref="HttpContext"/> for the current request.</param>
         /// <param name="correlationContextFactory">The <see cref="ICorrelationContextFactory"/> which can create a <see cref="CorrelationContext"/>.</param>
-        /// <returns></returns>
         public async Task Invoke(HttpContext context, ICorrelationContextFactory correlationContextFactory)
         {
-            var correlationIdFoundInRequestHeader = context.Request.Headers.TryGetValue(_options.Header, out var correlationId);
+            var correlationId = SetCorrelationId(context);
 
-            if (!correlationIdFoundInRequestHeader)
-                correlationId = GenerateCorrelationId(context.TraceIdentifier);
-            
             if (_options.UpdateTraceIdentifier)
                 context.TraceIdentifier = correlationId;
-            
+
             correlationContextFactory.Create(correlationId, _options.Header);
 
             if (_options.IncludeInResponse)
@@ -54,7 +50,7 @@ namespace CorrelationId
                     {
                         context.Response.Headers.Add(_options.Header, correlationId);
                     }
-                   
+
                     return Task.CompletedTask;
                 });
             }
@@ -63,6 +59,19 @@ namespace CorrelationId
 
             correlationContextFactory.Dispose();
         }
+
+        private StringValues SetCorrelationId(HttpContext context)
+        {
+            var correlationIdFoundInRequestHeader = context.Request.Headers.TryGetValue(_options.Header, out var correlationId);
+
+            if (RequiresGenerationOfCorrelationId(correlationIdFoundInRequestHeader, correlationId))
+                correlationId = GenerateCorrelationId(context.TraceIdentifier);
+
+            return correlationId;
+        }
+
+        private static bool RequiresGenerationOfCorrelationId(bool idInHeader, StringValues idFromHeader) => 
+            !idInHeader || StringValues.IsNullOrEmpty(idFromHeader);
 
         private StringValues GenerateCorrelationId(string traceIdentifier) => 
             _options.UseGuidForCorrelationId || string.IsNullOrEmpty(traceIdentifier) ? Guid.NewGuid().ToString() : traceIdentifier;
