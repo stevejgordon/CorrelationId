@@ -11,7 +11,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>aspnetcore;correlationid</PackageTags>
     <NeutralLanguage>en</NeutralLanguage>
-    <Version>2.1.0-rc2</Version>
+    <Version>2.1.0-rc3</Version>
     <DocumentationFile>bin\Release\netstandard1.4\CorrelationId.xml</DocumentationFile>
     <PackageProjectUrl>https://github.com/stevejgordon/CorrelationId</PackageProjectUrl>
     <RepositoryUrl>https://github.com/stevejgordon/CorrelationId</RepositoryUrl>
