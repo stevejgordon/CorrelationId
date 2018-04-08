@@ -7,17 +7,26 @@ namespace CorrelationId
     /// </summary>
     public class CorrelationContext
     {
-        internal CorrelationContext(string correlationId)
+        internal CorrelationContext(string correlationId, string header)
         {
             if (string.IsNullOrEmpty(correlationId))
                 throw new ArgumentNullException(nameof(correlationId));
 
+            if (string.IsNullOrEmpty(header))
+                throw new ArgumentNullException(nameof(header));
+
             CorrelationId = correlationId;
+            Header = header;
         }
 
         /// <summary>
         /// The Correlation ID which is applicable to the current request.
         /// </summary>
         public string CorrelationId { get; }
+
+        /// <summary>
+        /// The name of the header from which the Correlation ID is read/written.
+        /// </summary>
+        public string Header { get; }
     }
 }

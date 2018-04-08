@@ -3,6 +3,9 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace CorrelationId
 {
+    /// <summary>
+    /// Extensions on the <see cref="IServiceCollection"/>.
+    /// </summary>
     public static class CorrelationIdServiceExtensions
     {
         /// <summary>
