@@ -2,8 +2,10 @@
 
 namespace CorrelationId
 {
-    /// <inheritdoc />
-    public class CorrelationContext : ICorrelationContext
+    /// <summary>
+    /// Provides access to per request correlation properties.
+    /// </summary>
+    public class CorrelationContext
     {
         internal CorrelationContext(string correlationId, string header)
         {
@@ -17,10 +19,14 @@ namespace CorrelationId
             Header = header;
         }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// The Correlation ID which is applicable to the current request.
+        /// </summary>
         public string CorrelationId { get; }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// The name of the header from which the Correlation ID is read/written.
+        /// </summary>
         public string Header { get; }
     }
 }

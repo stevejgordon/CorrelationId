@@ -5,10 +5,10 @@ namespace CorrelationId
     /// <inheritdoc />
     public class CorrelationContextAccessor : ICorrelationContextAccessor
     {
-        private static AsyncLocal<ICorrelationContext> _correlationContext = new AsyncLocal<ICorrelationContext>();
+        private static AsyncLocal<CorrelationContext> _correlationContext = new AsyncLocal<CorrelationContext>();
 
         /// <inheritdoc />
-        public ICorrelationContext CorrelationContext
+        public CorrelationContext CorrelationContext
         {
             get => _correlationContext.Value;
             set => _correlationContext.Value = value;
