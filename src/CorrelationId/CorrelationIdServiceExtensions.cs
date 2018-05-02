@@ -12,10 +12,12 @@ namespace CorrelationId
         /// Adds required services to support the Correlation ID functionality.
         /// </summary>
         /// <param name="serviceCollection"></param>
-        public static void AddCorrelationId(this IServiceCollection serviceCollection)
+        public static IServiceCollection AddCorrelationId(this IServiceCollection serviceCollection)
         {
             serviceCollection.TryAddSingleton<ICorrelationContextAccessor, CorrelationContextAccessor>();
             serviceCollection.TryAddTransient<ICorrelationContextFactory, CorrelationContextFactory>();
+
+            return serviceCollection;
         }
     }
 }
