@@ -14,6 +14,15 @@
 
         /// <summary>
         /// <para>
+        /// Ignore request header.
+        /// When true the TraceIdentifier for the current request ignores the header from request.
+        /// </para>
+        /// <para>Default: false</para>
+        /// </summary>
+        public bool IgnoreRequestHeader { get; set; } = false;
+
+        /// <summary>
+        /// <para>
         /// Controls whether the correlation ID is returned in the response headers.
         /// </para>
         /// <para>Default: true</para>

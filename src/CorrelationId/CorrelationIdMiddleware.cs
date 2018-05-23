@@ -64,7 +64,7 @@ namespace CorrelationId
         {
             var correlationIdFoundInRequestHeader = context.Request.Headers.TryGetValue(_options.Header, out var correlationId);
 
-            if (RequiresGenerationOfCorrelationId(correlationIdFoundInRequestHeader, correlationId))
+            if (_options.IgnoreRequestHeader || RequiresGenerationOfCorrelationId(correlationIdFoundInRequestHeader, correlationId))
                 correlationId = GenerateCorrelationId(context.TraceIdentifier);
 
             return correlationId;
