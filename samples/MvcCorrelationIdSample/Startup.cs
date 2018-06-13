@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Swashbuckle.AspNetCore.Swagger;
+using System;
 
 namespace MvcCorrelationIdSample
 {
@@ -20,6 +22,13 @@ namespace MvcCorrelationIdSample
         {
             services.AddMvc();
 
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info { Title = "MvcCorrelationIdSample", Version = "v1" });
+                //add custom input for correction id header
+                c.OperationFilter<AddHeaderOperationFilter>("X-Correlation-ID", "Correlation Id for the request");
+            });
+
             services.AddCorrelationId();
 
             services.AddScoped<ScopedClass>();
@@ -34,6 +43,17 @@ namespace MvcCorrelationIdSample
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            // Enable middleware to serve generated Swagger as a JSON endpoint.
+            app.UseSwagger();
+
+            app.MapWhen(x => x.Request.Path.Value.StartsWith("/swagger", StringComparison.OrdinalIgnoreCase), builder =>
+            {
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "MvcCorrelationIdSample");
+                });
+            });
 
             app.UseCorrelationId();
 

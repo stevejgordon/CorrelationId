@@ -12,6 +12,7 @@ namespace MvcCorrelationIdSample
 
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
+                .UseUrls("http://localhost:59923/")
                 .UseStartup<Startup>()
                 .Build();
     }

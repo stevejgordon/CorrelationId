@@ -3,27 +3,28 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:59922/",
+      "applicationUrl": "http://localhost:59923/api/values",
       "sslPort": 0
     }
   },
   "profiles": {
     "IIS Express": {
-        "commandName": "IISExpress",
-        "launchBrowser": true,
-        "launchUrl": "http://localhost:59922/api/values",
-        "environmentVariables": {
-            "ASPNETCORE_ENVIRONMENT": "Development"
-        }
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "http://localhost:59923/swagger",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "http://localhost:59923/swagger"
     },
     "MvcCorrelationIdSample": {
-        "commandName": "Project",
-        "launchBrowser": true,
-        "launchUrl": "http://localhost:59923/api/values",
-        "environmentVariables": {
-            "ASPNETCORE_ENVIRONMENT": "Development"
-        },
-        "applicationUrl": "http://localhost:59923/"
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "http://localhost:59923/swagger",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "http://localhost:59923/swagger"
     }
   }
 }

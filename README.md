@@ -19,3 +19,6 @@ You should install [CorrelationId with NuGet](https://www.nuget.org/packages/Cor
     Install-Package CorrelationId
 
 This command from Package Manager Console will download and install CorrelationId and all required dependencies.
+
+## MvcCorrelationIdSample
+Provides with ability to see this nuget package in action.
