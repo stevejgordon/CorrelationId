@@ -13,6 +13,21 @@ The TraceIdentifier on the HttpContext will be used for new requests and additio
 
 Examples in the [wiki](https://github.com/stevejgordon/CorrelationId/wiki).
 
+## Known Issue with ASP.NET Core 2.2.0
+
+It appears that a [regression in the code for ASP.NET Core 2.2.0](see https://github.com/aspnet/AspNetCore/issues/5144) means that setting the TraceIdentifier on the context via middleware results in the context becoming null when accessed further down in the pipeline. A fix is ready for 3.0.0 and te team plan to back-port this for the 2.2.2 release timeframe
+
+A workaround at this time is to disable the behaviour of updating the TraceIdentifier using the options when adding the middleware...
+
+```
+app.UseCorrelationId(new CorrelationIdOptions
+{
+	Header = "X-Correlation-ID",
+	UseGuidForCorrelationId = true,
+	UpdateTraceIdentifier = false
+});
+```
+
 ## Installation
 
 You should install [CorrelationId with NuGet](https://www.nuget.org/packages/CorrelationId/):
