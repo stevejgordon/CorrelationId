@@ -1,4 +1,6 @@
-﻿namespace CorrelationId
+﻿using System;
+
+namespace CorrelationId
 {
     /// <summary>
     /// Options for correlation ids.
@@ -36,5 +38,12 @@
         /// <para> Default: false.</para>
         /// </summary>
         public bool UseGuidForCorrelationId { get; set; } = false;
+
+        /// <summary>
+        /// A function that returns the correlation id in cases where no correlation ID is retrieved from the request header. It can be used to customize the correlation id generation.
+        /// For example, it can return sequential guids such as those provided by https://github.com/richardtallent/RT.Comb
+        /// options.CorrelationIdGenerator = () => RT.Comb.Provider.PostgreSql.Create().ToString("N");
+        /// </summary>
+        public Func<string> CorrelationIdGenerator { get; set; }
     }
 }
