@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 
 namespace CorrelationId
@@ -13,6 +15,7 @@ namespace CorrelationId
     public class CorrelationIdMiddleware
     {
         private readonly RequestDelegate _next;
+        private readonly ILogger _logger;
         private readonly CorrelationIdOptions _options;
 
         /// <summary>
@@ -20,9 +23,10 @@ namespace CorrelationId
         /// </summary>
         /// <param name="next">The next middleware in the pipeline.</param>
         /// <param name="options">The configuration options.</param>
-        public CorrelationIdMiddleware(RequestDelegate next, IOptions<CorrelationIdOptions> options)
+        public CorrelationIdMiddleware(RequestDelegate next, ILogger<CorrelationIdMiddleware> logger, IOptions<CorrelationIdOptions> options)
         {
             _next = next ?? throw new ArgumentNullException(nameof(next));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _options = options.Value ?? throw new ArgumentNullException(nameof(options));
         }
 
@@ -55,7 +59,13 @@ namespace CorrelationId
                 });
             }
 
-            await _next(context);
+            using (_logger.BeginScope(new Dictionary<string, object>
+            {
+                {nameof(CorrelationContext.CorrelationId), correlationId}
+            }))
+            {
+                await _next(context);
+            }
 
             correlationContextFactory.Dispose();
         }
