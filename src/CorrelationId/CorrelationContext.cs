@@ -22,11 +22,11 @@ namespace CorrelationId
         /// <summary>
         /// The Correlation ID which is applicable to the current request.
         /// </summary>
-        public string CorrelationId { get; }
+        public string CorrelationId { get; set;}
 
         /// <summary>
         /// The name of the header from which the Correlation ID is read/written.
         /// </summary>
-        public string Header { get; }
+        public string Header { get; set;}
     }
 }
