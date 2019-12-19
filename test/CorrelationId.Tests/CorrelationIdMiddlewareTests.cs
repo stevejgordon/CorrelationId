@@ -22,11 +22,9 @@ namespace CorrelationId.Tests
         [Fact]
         public async Task ReturnsBadRequest_WhenEnforceOptionSetToTrue_AndNoExistingHeaderIsSent()
         {
-            var options = new CorrelationIdOptions { EnforceHeader = true };
-
             var builder = new WebHostBuilder()
-                .Configure(app => app.UseCorrelationId(options))
-                .ConfigureServices(sc => sc.AddDefaultCorrelationId());
+                .Configure(app => app.UseCorrelationId())
+                .ConfigureServices(sc => sc.AddDefaultCorrelationId(options => options.EnforceHeader = true));
 
             var server = new TestServer(builder);
 
@@ -74,17 +72,21 @@ namespace CorrelationId.Tests
         [Fact]
         public async Task DoesNotReturnCorrelationIdInResponseHeader_WhenIncludeInResponseIsFalse()
         {
-            var options = new CorrelationIdOptions { IncludeInResponse = false };
+            string header = null;
 
             var builder = new WebHostBuilder()
-               .Configure(app => app.UseCorrelationId(options))
-               .ConfigureServices(sc => sc.AddDefaultCorrelationId());
+               .Configure(app => app.UseCorrelationId())
+               .ConfigureServices(sc => sc.AddDefaultCorrelationId(options =>
+               {
+                   options.IncludeInResponse = false;
+                   header = options.RequestHeader;
+               }));
 
             var server = new TestServer(builder);
 
             var response = await server.CreateClient().GetAsync("");
 
-            var headerExists = response.Headers.TryGetValues(options.RequestHeader, out IEnumerable<string> _);
+            var headerExists = response.Headers.TryGetValues(header, out IEnumerable<string> _);
 
             Assert.False(headerExists);
         }
@@ -94,11 +96,9 @@ namespace CorrelationId.Tests
         {
             const string customHeader = "X-Test-RequestHeader";
 
-            var options = new CorrelationIdOptions { ResponseHeader = customHeader };
-
             var builder = new WebHostBuilder()
-               .Configure(app => app.UseCorrelationId(options))
-               .ConfigureServices(sc => sc.AddDefaultCorrelationId());
+               .Configure(app => app.UseCorrelationId())
+               .ConfigureServices(sc => sc.AddDefaultCorrelationId(options => options.ResponseHeader = customHeader));
 
             var server = new TestServer(builder);
 
@@ -139,7 +139,7 @@ namespace CorrelationId.Tests
                 .ConfigureServices(sc => sc.AddDefaultCorrelationId());
 
             var server = new TestServer(builder);
-            
+
             var response = await server.CreateClient().GetAsync("");
 
             var header = response.Headers.GetValues(new CorrelationIdOptions().RequestHeader);
@@ -152,14 +152,9 @@ namespace CorrelationId.Tests
         [Fact]
         public async Task CorrelationId_SetToCustomGenerator_WhenCorrelationIdGeneratorIsSet()
         {
-            var options = new CorrelationIdOptions
-            {
-                CorrelationIdGenerator = () => "Foo"
-            };
-
             var builder = new WebHostBuilder()
-                .Configure(app => app.UseCorrelationId(options))
-                .ConfigureServices(sc => sc.AddDefaultCorrelationId());
+                .Configure(app => app.UseCorrelationId())
+                .ConfigureServices(sc => sc.AddDefaultCorrelationId(options => options.CorrelationIdGenerator = () => "Foo"));
 
             var server = new TestServer(builder);
 
@@ -205,7 +200,7 @@ namespace CorrelationId.Tests
 
             Assert.Equal(TestCorrelationIdProvider.FixedCorrelationId, header.FirstOrDefault());
         }
-        
+
         [Fact]
         public async Task CorrelationId_ReturnedCorrectlyFromSingletonService()
         {
@@ -319,12 +314,12 @@ namespace CorrelationId.Tests
         [Fact]
         public async Task CorrelationContextIncludesHeaderValue_WhichMatchesTheOriginalOptionsValue()
         {
-            var options = new CorrelationIdOptions { RequestHeader = "custom-header" };
+            const string customHeader = "custom-header";
 
             var builder = new WebHostBuilder()
                 .Configure(app =>
                 {
-                    app.UseCorrelationId(options);
+                    app.UseCorrelationId();
 
                     app.Use(async (ctx, next) =>
                     {
@@ -333,7 +328,7 @@ namespace CorrelationId.Tests
                         await ctx.Response.WriteAsync(accessor.CorrelationContext.Header);
                     });
                 })
-                .ConfigureServices(sc => sc.AddDefaultCorrelationId());
+                .ConfigureServices(sc => sc.AddDefaultCorrelationId(options => options.RequestHeader = customHeader));
 
             var server = new TestServer(builder);
 
@@ -341,28 +336,26 @@ namespace CorrelationId.Tests
 
             var body = await response.Content.ReadAsStringAsync();
 
-            Assert.Equal(body, options.RequestHeader);
+            Assert.Equal(body, customHeader);
         }
 
         [Fact]
         public async Task TraceIdentifier_IsNotUpdated_WhenUpdateTraceIdentifierIsFalse()
         {
-            var options = new CorrelationIdOptions { UpdateTraceIdentifier = false };
-
             var expectedHeaderName = new CorrelationIdOptions().RequestHeader;
             const string expectedHeaderValue = "123456";
-            
+
             var builder = new WebHostBuilder()
                 .Configure(app =>
                 {
-                    app.UseCorrelationId(options);
+                    app.UseCorrelationId();
 
                     app.Use(async (ctx, next) =>
                     {
                         await ctx.Response.WriteAsync(ctx.TraceIdentifier);
                     });
                 })
-                .ConfigureServices(sc => sc.AddDefaultCorrelationId());
+                .ConfigureServices(sc => sc.AddDefaultCorrelationId(options => options.UpdateTraceIdentifier = false));
 
             var server = new TestServer(builder);
 
@@ -370,7 +363,7 @@ namespace CorrelationId.Tests
             request.Headers.Add(expectedHeaderName, expectedHeaderValue);
 
             var response = await server.CreateClient().SendAsync(request);
-            
+
             var body = await response.Content.ReadAsStringAsync();
 
             Assert.NotEqual(body, expectedHeaderValue);
@@ -379,22 +372,20 @@ namespace CorrelationId.Tests
         [Fact]
         public async Task TraceIdentifier_IsNotUpdated_WhenUpdateTraceIdentifierIsTrue()
         {
-            var options = new CorrelationIdOptions { UpdateTraceIdentifier = true };
-
             var expectedHeaderName = new CorrelationIdOptions().RequestHeader;
             const string expectedHeaderValue = "123456";
 
             var builder = new WebHostBuilder()
                 .Configure(app =>
                 {
-                    app.UseCorrelationId(options);
+                    app.UseCorrelationId();
 
                     app.Use(async (ctx, next) =>
                     {
                         await ctx.Response.WriteAsync(ctx.TraceIdentifier);
                     });
                 })
-                .ConfigureServices(sc => sc.AddDefaultCorrelationId());
+                .ConfigureServices(sc => sc.AddDefaultCorrelationId(options => options.UpdateTraceIdentifier = true));
 
             var server = new TestServer(builder);
 
