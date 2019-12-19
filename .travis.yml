@@ -1,9 +1,19 @@
 language: csharp
+os:
+  - linux
+  
+sudo: required
 mono: none
 dist: xenial
 dotnet: 3.1.100
+
 install:
 - dotnet restore
+
+before_script:
+- sudo apt-get install dotnet-sdk-2.2
+- cd src
+
 script:
 - dotnet build
 - dotnet test test/CorrelationId.Tests/CorrelationId.Tests.csproj
