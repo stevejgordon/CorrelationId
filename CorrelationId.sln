@@ -17,6 +17,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{1DC2BB08-1
 	ProjectSection(SolutionItems) = preProject
 		docs\index.md = docs\index.md
 		README.md = README.md
+		releasenotes.md = releasenotes.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{5961B376-2D2A-441B-BF59-9A797AC9178B}"
