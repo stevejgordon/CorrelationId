@@ -7,7 +7,13 @@ namespace CorrelationId
     /// </summary>
     public class CorrelationContext
     {
-        internal CorrelationContext(string correlationId, string header)
+        /// <summary>
+        /// Create a <see cref="CorrelationContext"/> instance.
+        /// </summary>
+        /// <param name="correlationId"></param>
+        /// <param name="header"></param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public CorrelationContext(string correlationId, string header)
         {
             if (string.IsNullOrEmpty(correlationId))
                 throw new ArgumentNullException(nameof(correlationId));
