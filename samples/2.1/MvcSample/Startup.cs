@@ -1,10 +1,11 @@
 ﻿using CorrelationId;
+using CorrelationId.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace MvcCorrelationIdSample
+namespace MvcSample
 {
     public class Startup
     {
@@ -20,7 +21,7 @@ namespace MvcCorrelationIdSample
         {
             services.AddMvc();
 
-            services.AddCorrelationId();
+            services.AddDefaultCorrelationId();
 
             services.AddScoped<ScopedClass>();
             services.AddTransient<TransientClass>();

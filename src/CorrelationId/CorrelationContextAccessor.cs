@@ -1,4 +1,5 @@
 ﻿using System.Threading;
+using CorrelationId.Abstractions;
 
 namespace CorrelationId
 {

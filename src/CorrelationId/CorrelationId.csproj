@@ -1,18 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard1.4</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
     <Authors>Steve Gordon</Authors>
-    <Company>Atura / Steve Gordon</Company>
+    <Company>Steve Gordon | www.stevejgordon.co.uk</Company>
     <Product>CorrelationId Middleware for ASP.NET Core</Product>
     <Description>ASP.NET Core correlation ID middleware which synchronises the TraceIdentifier with a correlation ID header.</Description>
-    <Copyright>© Steve Gordon 2017. All rights reserved.</Copyright>
+    <Copyright>© Steve Gordon 2017-2020. All rights reserved.</Copyright>
     <RepositoryType>git</RepositoryType>
     <PackageTags>aspnetcore;correlationid</PackageTags>
     <NeutralLanguage>en</NeutralLanguage>
-    <Version>2.1.0</Version>
-    <DocumentationFile>bin\Release\netstandard1.4\CorrelationId.xml</DocumentationFile>
+    <Version>3.0.0-preview.1</Version>
+    <DocumentationFile>bin\Release\netstandard2.0\CorrelationId.xml</DocumentationFile>
     <PackageProjectUrl>https://github.com/stevejgordon/CorrelationId</PackageProjectUrl>
     <RepositoryUrl>https://github.com/stevejgordon/CorrelationId</RepositoryUrl>
   </PropertyGroup>
@@ -26,8 +26,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="1.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="1.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="2.1.1" />
   </ItemGroup>
 
 </Project>

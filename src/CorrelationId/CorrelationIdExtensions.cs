@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Options;
 using System;
+using CorrelationId.Abstractions;
 
 namespace CorrelationId
 {
@@ -39,7 +40,7 @@ namespace CorrelationId
 
             return app.UseCorrelationId(new CorrelationIdOptions
             {
-                Header = header
+                RequestHeader = header
             });
         }
 

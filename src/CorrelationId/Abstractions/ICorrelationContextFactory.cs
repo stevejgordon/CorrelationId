@@ -1,4 +1,4 @@
-﻿namespace CorrelationId
+﻿namespace CorrelationId.Abstractions
 {
     /// <summary>
     /// A factory for creating and disposing an instance of a <see cref="CorrelationContext"/>.
