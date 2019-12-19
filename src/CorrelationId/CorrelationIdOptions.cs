@@ -64,9 +64,9 @@ namespace CorrelationId
         /// <para>
         /// Controls whether the ASP.NET Core TraceIdentifier will be set to match the CorrelationId.
         /// </para>
-        /// <para>Default: true</para>
+        /// <para>Default: false</para>
         /// </summary>
-        public bool UpdateTraceIdentifier { get; set; } = true;
+        public bool UpdateTraceIdentifier { get; set; } = false;
 
         /// <summary>
         /// A function that returns the correlation ID in cases where no correlation ID is retrieved from the request header. It can be used to customise the correlation ID generation.
