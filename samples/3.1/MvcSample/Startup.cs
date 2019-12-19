@@ -27,6 +27,8 @@ namespace MvcSample
                 .AddCorrelationIdForwarding()
                 .AddHttpMessageHandler<NoOpDelegatingHandler>();
 
+            //services.AddCorrelationId().WithCustomProvider<DoNothingCorrelationIdProvider>();
+
             services.AddDefaultCorrelationId();
 
             services.AddControllers();

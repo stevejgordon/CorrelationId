@@ -8,7 +8,7 @@ namespace CorrelationId
         private readonly ICorrelationContextAccessor _correlationContextAccessor;
 
         /// <summary>
-        /// Initialises a new instance of the <see cref="T:CorrelationId.CorrelationContextFactory" /> class.
+        /// Initialises a new instance of <see cref="CorrelationContextFactory" />.
         /// </summary>
         public CorrelationContextFactory() 
             : this(null)
