@@ -11,11 +11,28 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Xunit;
 using System;
+using System.Net;
 
 namespace CorrelationId.Tests
 {
     public class CorrelationIdMiddlewareTests
     {
+        [Fact]
+        public async Task ReturnsBadRequest_WhenEnforceOptionSetToTrue_AndNoExistingHeaderIsSent()
+        {
+            var options = new CorrelationIdOptions { EnforceHeader = true };
+
+            var builder = new WebHostBuilder()
+                .Configure(app => app.UseCorrelationId(options))
+                .ConfigureServices(sc => sc.AddCorrelationId());
+
+            var server = new TestServer(builder);
+
+            var response = await server.CreateClient().GetAsync("");
+
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
+
         [Fact]
         public async Task ReturnsCorrelationIdInResponseHeader_WhenOptionSetToTrue()
         {
@@ -173,6 +190,7 @@ namespace CorrelationId.Tests
             Assert.True(isGuid);
         }
 
+        [Fact]
         public async Task CorrelationId_SetToCustomGenerator_WhenCorrelationIdGeneratorIsSet()
         {
             var options = new CorrelationIdOptions
@@ -338,8 +356,8 @@ namespace CorrelationId.Tests
                     app.Use(async (ctx, next) =>
                     {
                         var accessor = ctx.RequestServices.GetService<ICorrelationContextAccessor>();
+                        ctx.Response.StatusCode = StatusCodes.Status200OK;
                         await ctx.Response.WriteAsync(accessor.CorrelationContext.Header);
-                        await next();
                     });
                 })
                 .ConfigureServices(sc => sc.AddCorrelationId());
@@ -369,7 +387,6 @@ namespace CorrelationId.Tests
                     app.Use(async (ctx, next) =>
                     {
                         await ctx.Response.WriteAsync(ctx.TraceIdentifier);
-                        await next();
                     });
                 })
                 .ConfigureServices(sc => sc.AddCorrelationId());
@@ -402,7 +419,6 @@ namespace CorrelationId.Tests
                     app.Use(async (ctx, next) =>
                     {
                         await ctx.Response.WriteAsync(ctx.TraceIdentifier);
-                        await next();
                     });
                 })
                 .ConfigureServices(sc => sc.AddCorrelationId());

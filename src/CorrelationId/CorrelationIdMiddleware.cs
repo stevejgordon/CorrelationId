@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
@@ -22,6 +23,7 @@ namespace CorrelationId
         /// Creates a new instance of the CorrelationIdMiddleware.
         /// </summary>
         /// <param name="next">The next middleware in the pipeline.</param>
+        /// <param name="logger">The <see cref="ILogger"/> instance to log to.</param>
         /// <param name="options">The configuration options.</param>
         public CorrelationIdMiddleware(RequestDelegate next, ILogger<CorrelationIdMiddleware> logger, IOptions<CorrelationIdOptions> options)
         {
@@ -38,8 +40,23 @@ namespace CorrelationId
         /// <param name="correlationContextFactory">The <see cref="ICorrelationContextFactory"/> which can create a <see cref="CorrelationContext"/>.</param>
         public async Task Invoke(HttpContext context, ICorrelationContextFactory correlationContextFactory)
         {
-            var correlationId = SetCorrelationId(context);
+            var hasCorrelationIdHeader = context.Request.Headers.TryGetValue(_options.Header, out var cid) &&
+                                           !StringValues.IsNullOrEmpty(cid);
 
+            if (!hasCorrelationIdHeader && _options.EnforceHeader)
+            {
+                context.Response.StatusCode = StatusCodes.Status400BadRequest;
+                await context.Response.WriteAsync($"The '{_options.Header}' request header is required, but was not found.");
+                return;
+            }
+
+            var correlationId = hasCorrelationIdHeader ? cid.FirstOrDefault() : "Not set";
+
+            if (_options.IgnoreRequestHeader || RequiresGenerationOfCorrelationId(hasCorrelationIdHeader, cid))
+            {
+                correlationId = GenerateCorrelationId(context.TraceIdentifier);
+            }
+            
             if (_options.UpdateTraceIdentifier)
                 context.TraceIdentifier = correlationId;
 
@@ -69,17 +86,7 @@ namespace CorrelationId
 
             correlationContextFactory.Dispose();
         }
-
-        private StringValues SetCorrelationId(HttpContext context)
-        {
-            var correlationIdFoundInRequestHeader = context.Request.Headers.TryGetValue(_options.Header, out var correlationId);
-
-            if (_options.IgnoreRequestHeader || RequiresGenerationOfCorrelationId(correlationIdFoundInRequestHeader, correlationId))
-                correlationId = GenerateCorrelationId(context.TraceIdentifier);
-
-            return correlationId;
-        }
-
+        
         private static bool RequiresGenerationOfCorrelationId(bool idInHeader, StringValues idFromHeader) => 
             !idInHeader || StringValues.IsNullOrEmpty(idFromHeader);
 
@@ -87,8 +94,7 @@ namespace CorrelationId
         {
             if (_options.UseGuidForCorrelationId) return Guid.NewGuid().ToString();
             if (_options.CorrelationIdGenerator != null) return _options.CorrelationIdGenerator();
-            if (string.IsNullOrEmpty(traceIdentifier)) return Guid.NewGuid().ToString();
-            return traceIdentifier;
+            return string.IsNullOrEmpty(traceIdentifier) ? Guid.NewGuid().ToString() : traceIdentifier;
         }
     }
 }
