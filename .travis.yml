@@ -11,8 +11,7 @@ install:
 - dotnet restore
 
 before_script:
-- sudo apt-get install dotnet-sdk-2.2
-- cd src
+- sudo apt-get install dotnet-sdk-2.1
 
 script:
 - dotnet build
