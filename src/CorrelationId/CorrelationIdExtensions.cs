@@ -40,7 +40,7 @@ namespace CorrelationId
 
             return app.UseCorrelationId(new CorrelationIdOptions
             {
-                Header = header
+                RequestHeader = header
             });
         }
 

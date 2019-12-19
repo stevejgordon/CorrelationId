@@ -46,7 +46,7 @@ namespace CorrelationId.Tests
 
             var response = await server.CreateClient().GetAsync("");
 
-            var expectedHeaderName = new CorrelationIdOptions().Header;
+            var expectedHeaderName = new CorrelationIdOptions().RequestHeader;
 
             var header = response.Headers.GetValues(expectedHeaderName);
 
@@ -84,7 +84,7 @@ namespace CorrelationId.Tests
 
             var response = await server.CreateClient().GetAsync("");
 
-            var headerExists = response.Headers.TryGetValues(options.Header, out IEnumerable<string> _);
+            var headerExists = response.Headers.TryGetValues(options.RequestHeader, out IEnumerable<string> _);
 
             Assert.False(headerExists);
         }
@@ -92,9 +92,9 @@ namespace CorrelationId.Tests
         [Fact]
         public async Task CorrelationIdHeaderFieldName_MatchesHeaderOption()
         {
-            const string customHeader = "X-Test-Header";
+            const string customHeader = "X-Test-RequestHeader";
 
-            var options = new CorrelationIdOptions { Header = customHeader };
+            var options = new CorrelationIdOptions { ResponseHeader = customHeader };
 
             var builder = new WebHostBuilder()
                .Configure(app => app.UseCorrelationId(options))
@@ -110,27 +110,9 @@ namespace CorrelationId.Tests
         }
 
         [Fact]
-        public async Task CorrelationIdHeaderFieldName_MatchesHeaderFromStringOverload()
-        {
-            const string customHeader = "X-Test-Header";
-
-            var builder = new WebHostBuilder()
-               .Configure(app => app.UseCorrelationId(customHeader))
-               .ConfigureServices(sc => sc.AddDefaultCorrelationId());
-
-            var server = new TestServer(builder);
-
-            var response = await server.CreateClient().GetAsync("");
-
-            var header = response.Headers.GetValues(customHeader);
-
-            Assert.NotNull(header);
-        }
-
-        [Fact]
         public async Task CorrelationId_SetToCorrelationIdFromRequestHeader()
         {
-            var expectedHeaderName = new CorrelationIdOptions().Header;
+            var expectedHeaderName = new CorrelationIdOptions().RequestHeader;
             const string expectedHeaderValue = "123456";
 
             var builder = new WebHostBuilder()
@@ -160,7 +142,7 @@ namespace CorrelationId.Tests
             
             var response = await server.CreateClient().GetAsync("");
 
-            var header = response.Headers.GetValues(new CorrelationIdOptions().Header);
+            var header = response.Headers.GetValues(new CorrelationIdOptions().RequestHeader);
 
             var isGuid = Guid.TryParse(header.FirstOrDefault(), out _);
 
@@ -183,7 +165,7 @@ namespace CorrelationId.Tests
 
             var response = await server.CreateClient().GetAsync("");
 
-            var header = response.Headers.GetValues(new CorrelationIdOptions().Header);
+            var header = response.Headers.GetValues(new CorrelationIdOptions().RequestHeader);
 
             var correlationId = header.FirstOrDefault();
 
@@ -201,7 +183,7 @@ namespace CorrelationId.Tests
 
             var response = await server.CreateClient().GetAsync("");
 
-            var header = response.Headers.GetValues(new CorrelationIdOptions().Header);
+            var header = response.Headers.GetValues(new CorrelationIdOptions().RequestHeader);
 
             var isGuid = Guid.TryParse(header.FirstOrDefault(), out _);
 
@@ -219,7 +201,7 @@ namespace CorrelationId.Tests
 
             var response = await server.CreateClient().GetAsync("");
 
-            var header = response.Headers.GetValues(new CorrelationIdOptions().Header);
+            var header = response.Headers.GetValues(new CorrelationIdOptions().RequestHeader);
 
             Assert.Equal(TestCorrelationIdProvider.FixedCorrelationId, header.FirstOrDefault());
         }
@@ -227,7 +209,7 @@ namespace CorrelationId.Tests
         [Fact]
         public async Task CorrelationId_ReturnedCorrectlyFromSingletonService()
         {
-            var expectedHeaderName = new CorrelationIdOptions().Header;
+            var expectedHeaderName = new CorrelationIdOptions().RequestHeader;
 
             var builder = new WebHostBuilder()
                 .Configure(app =>
@@ -282,7 +264,7 @@ namespace CorrelationId.Tests
         [Fact]
         public async Task CorrelationId_ReturnedCorrectlyFromTransientService()
         {
-            var expectedHeaderName = new CorrelationIdOptions().Header;
+            var expectedHeaderName = new CorrelationIdOptions().RequestHeader;
 
             var builder = new WebHostBuilder()
                 .Configure(app =>
@@ -337,7 +319,7 @@ namespace CorrelationId.Tests
         [Fact]
         public async Task CorrelationContextIncludesHeaderValue_WhichMatchesTheOriginalOptionsValue()
         {
-            var options = new CorrelationIdOptions { Header = "custom-header" };
+            var options = new CorrelationIdOptions { RequestHeader = "custom-header" };
 
             var builder = new WebHostBuilder()
                 .Configure(app =>
@@ -359,7 +341,7 @@ namespace CorrelationId.Tests
 
             var body = await response.Content.ReadAsStringAsync();
 
-            Assert.Equal(body, options.Header);
+            Assert.Equal(body, options.RequestHeader);
         }
 
         [Fact]
@@ -367,7 +349,7 @@ namespace CorrelationId.Tests
         {
             var options = new CorrelationIdOptions { UpdateTraceIdentifier = false };
 
-            var expectedHeaderName = new CorrelationIdOptions().Header;
+            var expectedHeaderName = new CorrelationIdOptions().RequestHeader;
             const string expectedHeaderValue = "123456";
             
             var builder = new WebHostBuilder()
@@ -399,7 +381,7 @@ namespace CorrelationId.Tests
         {
             var options = new CorrelationIdOptions { UpdateTraceIdentifier = true };
 
-            var expectedHeaderName = new CorrelationIdOptions().Header;
+            var expectedHeaderName = new CorrelationIdOptions().RequestHeader;
             const string expectedHeaderValue = "123456";
 
             var builder = new WebHostBuilder()

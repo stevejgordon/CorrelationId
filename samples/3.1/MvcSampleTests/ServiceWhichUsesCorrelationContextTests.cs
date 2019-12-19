@@ -13,7 +13,7 @@ namespace MvcSampleTests
         {
             var mockCorrelationContextAccessor = new Mock<ICorrelationContextAccessor>();
             mockCorrelationContextAccessor.Setup(x => x.CorrelationContext)
-                .Returns(new CorrelationContext("ABC", "Header"));
+                .Returns(new CorrelationContext("ABC", "RequestHeader"));
 
             var sut = new ServiceWhichUsesCorrelationContext(mockCorrelationContextAccessor.Object);
 

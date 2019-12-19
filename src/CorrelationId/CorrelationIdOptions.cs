@@ -13,9 +13,14 @@ namespace CorrelationId
         private const string LoggerScopeKey = "CorrelationId";
 
         /// <summary>
-        /// The name of the header from which the Correlation ID is read/written.
+        /// The name of the header from which the Correlation ID is read.
         /// </summary>
-        public string Header { get; set; } = DefaultHeader;
+        public string RequestHeader { get; set; } = DefaultHeader;
+
+        /// <summary>
+        /// The name of the header from which the Correlation ID is written.
+        /// </summary>
+        public string ResponseHeader { get; set; } = DefaultHeader;
 
         /// <summary>
         /// <para>

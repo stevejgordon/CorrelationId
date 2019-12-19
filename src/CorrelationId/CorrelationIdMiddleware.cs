@@ -49,13 +49,13 @@ namespace CorrelationId
                 throw new InvalidOperationException("No 'ICorrelationIdProvider' has been registered.");
             }
 
-            var hasCorrelationIdHeader = context.Request.Headers.TryGetValue(_options.Header, out var cid) &&
+            var hasCorrelationIdHeader = context.Request.Headers.TryGetValue(_options.RequestHeader, out var cid) &&
                                            !StringValues.IsNullOrEmpty(cid);
 
             if (!hasCorrelationIdHeader && _options.EnforceHeader)
             {
                 context.Response.StatusCode = StatusCodes.Status400BadRequest;
-                await context.Response.WriteAsync($"The '{_options.Header}' request header is required, but was not found.");
+                await context.Response.WriteAsync($"The '{_options.RequestHeader}' request header is required, but was not found.");
                 return;
             }
 
@@ -69,16 +69,16 @@ namespace CorrelationId
             if (_options.UpdateTraceIdentifier)
                 context.TraceIdentifier = correlationId;
 
-            correlationContextFactory.Create(correlationId, _options.Header);
+            correlationContextFactory.Create(correlationId, _options.RequestHeader);
 
             if (_options.IncludeInResponse)
             {
                 // apply the correlation ID to the response header for client side tracking
                 context.Response.OnStarting(() =>
                 {
-                    if (!context.Response.Headers.ContainsKey(_options.Header))
+                    if (!context.Response.Headers.ContainsKey(_options.RequestHeader))
                     {
-                        context.Response.Headers.Add(_options.Header, correlationId);
+                        context.Response.Headers.Add(_options.ResponseHeader, correlationId);
                     }
 
                     return Task.CompletedTask;
