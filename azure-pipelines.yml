@@ -8,6 +8,10 @@ steps:
 - script: dotnet build --configuration $(buildConfiguration)
   displayName: 'dotnet build $(buildConfiguration)'
 
+- task: UseDotNet@2
+  inputs:
+    version: '3.0.100'
+
 - task: DotNetCoreCLI@2
   inputs:
     command: test
