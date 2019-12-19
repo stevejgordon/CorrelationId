@@ -238,7 +238,7 @@ namespace CorrelationId.Tests
                 {
                     sc.AddCorrelationId();
                     sc.TryAddSingleton<SingletonClass>();
-                    sc.TryAddSingleton<ScopedClass>();
+                    sc.TryAddScoped<ScopedClass>();
                 });
 
             var server = new TestServer(builder);
@@ -292,8 +292,8 @@ namespace CorrelationId.Tests
                 .ConfigureServices(sc =>
                 {
                     sc.AddCorrelationId();
-                    sc.TryAddSingleton<TransientClass>();
-                    sc.TryAddSingleton<ScopedClass>();
+                    sc.TryAddTransient<TransientClass>();
+                    sc.TryAddScoped<ScopedClass>();
                 });
 
             var server = new TestServer(builder);
