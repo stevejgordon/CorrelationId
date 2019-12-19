@@ -29,10 +29,12 @@ namespace MvcSample
 
             //services.AddCorrelationId().WithCustomProvider<DoNothingCorrelationIdProvider>();
 
-            services.AddDefaultCorrelationId();
+            services.AddDefaultCorrelationId(options => { options.CorrelationIdGenerator = () => "Foo"; });
+
+            services.AddHttpContextAccessor();
 
             services.AddControllers();
-        }
+            }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -44,11 +46,7 @@ namespace MvcSample
 
             app.UseHttpsRedirection();
 
-            app.UseCorrelationId(new CorrelationIdOptions
-            {
-                EnforceHeader = false,
-                AddToLoggingScope = true
-            });
+            app.UseCorrelationId();
 
             app.UseRouting();
 

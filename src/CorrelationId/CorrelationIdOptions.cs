@@ -17,10 +17,12 @@ namespace CorrelationId
         /// </summary>
         public string RequestHeader { get; set; } = DefaultHeader;
 
+        private string _responseHeader = null;
+
         /// <summary>
         /// The name of the header from which the Correlation ID is written.
         /// </summary>
-        public string ResponseHeader { get; set; } = DefaultHeader;
+        public string ResponseHeader { get => _responseHeader ?? RequestHeader; set => _responseHeader = value; }
 
         /// <summary>
         /// <para>
