@@ -83,7 +83,12 @@ namespace CorrelationId
         private static bool RequiresGenerationOfCorrelationId(bool idInHeader, StringValues idFromHeader) => 
             !idInHeader || StringValues.IsNullOrEmpty(idFromHeader);
 
-        private StringValues GenerateCorrelationId(string traceIdentifier) => 
-            _options.UseGuidForCorrelationId || string.IsNullOrEmpty(traceIdentifier) ? Guid.NewGuid().ToString() : traceIdentifier;
+        private StringValues GenerateCorrelationId(string traceIdentifier)
+        {
+            if (_options.UseGuidForCorrelationId) return Guid.NewGuid().ToString();
+            if (_options.CorrelationIdGenerator != null) return _options.CorrelationIdGenerator();
+            if (string.IsNullOrEmpty(traceIdentifier)) return Guid.NewGuid().ToString();
+            return traceIdentifier;
+        }
     }
 }

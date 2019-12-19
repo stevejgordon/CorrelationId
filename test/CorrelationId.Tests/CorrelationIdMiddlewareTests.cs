@@ -151,6 +151,51 @@ namespace CorrelationId.Tests
         }
 
         [Fact]
+        public async Task CorrelationId_SetToGuid_WhenUseGuidForCorrelationId_IsTrue_EvenIfCorrelationIdGeneratorIsSet()
+        {
+            var options = new CorrelationIdOptions {
+                UseGuidForCorrelationId = true,
+                CorrelationIdGenerator = () => string.Empty
+            };
+
+            var builder = new WebHostBuilder()
+                .Configure(app => app.UseCorrelationId(options))
+                .ConfigureServices(sc => sc.AddCorrelationId());
+
+            var server = new TestServer(builder);
+
+            var response = await server.CreateClient().GetAsync("");
+
+            var header = response.Headers.GetValues(new CorrelationIdOptions().Header);
+
+            var isGuid = Guid.TryParse(header.FirstOrDefault(), out _);
+
+            Assert.True(isGuid);
+        }
+
+        public async Task CorrelationId_SetToCustomGenerator_WhenCorrelationIdGeneratorIsSet()
+        {
+            var options = new CorrelationIdOptions
+            {
+                CorrelationIdGenerator = () => "Foo"
+            };
+
+            var builder = new WebHostBuilder()
+                .Configure(app => app.UseCorrelationId(options))
+                .ConfigureServices(sc => sc.AddCorrelationId());
+
+            var server = new TestServer(builder);
+
+            var response = await server.CreateClient().GetAsync("");
+
+            var header = response.Headers.GetValues(new CorrelationIdOptions().Header);
+
+            var correlationId = header.FirstOrDefault();
+
+            Assert.Equal("Foo", correlationId);
+        }
+
+        [Fact]
         public async Task CorrelationId_NotSetToGuid_WhenUseGuidForCorrelationId_IsFalse()
         {
             var options = new CorrelationIdOptions { UseGuidForCorrelationId = false };
