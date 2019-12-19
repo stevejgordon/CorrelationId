@@ -36,7 +36,8 @@ namespace MvcSample
 
             app.UseCorrelationId(new CorrelationIdOptions
             {
-                EnforceHeader = true
+                EnforceHeader = true,
+                AddToLoggingScope = true
             });
 
             app.UseRouting();

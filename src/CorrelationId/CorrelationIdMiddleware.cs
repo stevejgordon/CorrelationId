@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Primitives;
 
 namespace CorrelationId
 {
@@ -56,7 +56,7 @@ namespace CorrelationId
             {
                 correlationId = GenerateCorrelationId(context.TraceIdentifier);
             }
-            
+
             if (_options.UpdateTraceIdentifier)
                 context.TraceIdentifier = correlationId;
 
@@ -76,18 +76,25 @@ namespace CorrelationId
                 });
             }
 
-            using (_logger.BeginScope(new Dictionary<string, object>
+            if (_options.AddToLoggingScope && !string.IsNullOrEmpty(_options.LoggingScopeKey))
             {
-                {nameof(CorrelationContext.CorrelationId), correlationId}
-            }))
+                using (_logger.BeginScope(new Dictionary<string, object>
+                {
+                    [_options.LoggingScopeKey] = correlationId
+                }))
+                {
+                    await _next(context);
+                }
+            }
+            else
             {
                 await _next(context);
             }
 
             correlationContextFactory.Dispose();
         }
-        
-        private static bool RequiresGenerationOfCorrelationId(bool idInHeader, StringValues idFromHeader) => 
+
+        private static bool RequiresGenerationOfCorrelationId(bool idInHeader, StringValues idFromHeader) =>
             !idInHeader || StringValues.IsNullOrEmpty(idFromHeader);
 
         private StringValues GenerateCorrelationId(string traceIdentifier)

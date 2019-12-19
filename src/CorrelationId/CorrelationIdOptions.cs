@@ -9,6 +9,8 @@ namespace CorrelationId
     {
         private const string DefaultHeader = "X-Correlation-ID";
 
+        private const string LoggerScopeKey = "CorrelationId";
+
         /// <summary>
         /// The name of the header from which the Correlation ID is read/written.
         /// </summary>
@@ -31,6 +33,23 @@ namespace CorrelationId
         /// <para>Default: false</para>
         /// </summary>
         public bool EnforceHeader { get; set; } = false;
+
+        /// <summary>
+        /// <para>
+        /// Add the correlation ID value to the logger scope for all requests.
+        /// When true the value of the correlation ID will be added to the logger scope payload.
+        /// </para>
+        /// <para>Default: false</para>
+        /// </summary>
+        public bool AddToLoggingScope { get; set; } = false;
+
+        /// <summary>
+        /// <para>
+        /// The name for the key used when adding the correlation ID to the logger scope.
+        /// </para>
+        /// <para>Default: 'CorrelationId'</para>
+        /// </summary>
+        public string LoggingScopeKey { get; set; } = LoggerScopeKey;
 
         /// <summary>
         /// <para>
