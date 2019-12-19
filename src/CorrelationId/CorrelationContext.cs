@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CorrelationId.Abstractions;
+using System;
 
 namespace CorrelationId
 {
@@ -8,15 +9,19 @@ namespace CorrelationId
     public class CorrelationContext
     {
         /// <summary>
+        /// The default correlation ID is used in cases where the correlation has not been set by the <see cref="ICorrelationIdProvider"/>.
+        /// </summary>
+        public const string DefaultCorrelationId = "Not set";
+
+        /// <summary>
         /// Create a <see cref="CorrelationContext"/> instance.
         /// </summary>
         /// <param name="correlationId">The correlation ID on the context.</param>
         /// <param name="header">The name of the header from which the Correlation ID was read/written.</param>
-        /// <exception cref="ArgumentException">Thrown if the <paramref name="correlationId"/> or <paramref name="header"/> are null or empty.</exception>
+        /// <exception cref="ArgumentException">Thrown if the <paramref name="header"/> is null or empty.</exception>
         public CorrelationContext(string correlationId, string header)
         {
-            if (string.IsNullOrEmpty(correlationId))
-                throw new ArgumentException("A correlation ID must be provided.", nameof(correlationId));
+            correlationId ??= DefaultCorrelationId;
 
             if (string.IsNullOrEmpty(header))
                 throw new ArgumentException("A header must be provided.", nameof(header));
