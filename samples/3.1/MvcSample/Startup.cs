@@ -24,15 +24,26 @@ namespace MvcSample
             services.AddTransient<NoOpDelegatingHandler>();
 
             services.AddHttpClient("MyClient")
-                .AddCorrelationIdForwarding()
+                .AddCorrelationIdForwarding() // add the handler to attach the correlation ID to outgoing requests for this named client
                 .AddHttpMessageHandler<NoOpDelegatingHandler>();
+                       
+            // Example of adding default correlation ID (using the GUID generator) services
+            // As shown here, options can be configured via the configure degelate overload
+            services.AddDefaultCorrelationId(options =>
+            { 
+                options.CorrelationIdGenerator = () => "Foo";
+                options.AddToLoggingScope = true;
+                options.EnforceHeader = true;
+                options.IgnoreRequestHeader = false;
+                options.IncludeInResponse = true;
+                options.RequestHeader = "My-Custom-Correlation-Id";
+                options.ResponseHeader = "X-Correlation-Id";
+                options.UpdateTraceIdentifier = false;
+            });
 
+            // Example of registering a custom correlation ID provider
             //services.AddCorrelationId().WithCustomProvider<DoNothingCorrelationIdProvider>();
-
-            services.AddDefaultCorrelationId(options => { options.CorrelationIdGenerator = () => "Foo"; });
-
-            services.AddHttpContextAccessor();
-
+            
             services.AddControllers();
             }
 
@@ -46,7 +57,7 @@ namespace MvcSample
 
             app.UseHttpsRedirection();
 
-            app.UseCorrelationId();
+            app.UseCorrelationId(); // adds the correlation ID middleware
 
             app.UseRouting();
 

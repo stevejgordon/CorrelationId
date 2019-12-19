@@ -6,10 +6,7 @@ namespace MvcSample
     {
         private readonly ICorrelationContextAccessor _correlationContextAccessor;
 
-        public ServiceWhichUsesCorrelationContext(ICorrelationContextAccessor correlationContextAccessor)
-        {
-            _correlationContextAccessor = correlationContextAccessor;
-        }
+        public ServiceWhichUsesCorrelationContext(ICorrelationContextAccessor correlationContextAccessor) => _correlationContextAccessor = correlationContextAccessor;
 
         public string DoStuff()
         {

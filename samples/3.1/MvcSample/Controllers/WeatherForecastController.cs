@@ -27,10 +27,9 @@ namespace MvcSample.Controllers
 
         [HttpGet]
         public IEnumerable<WeatherForecast> Get()
-        {
-            _logger.LogInformation("This is a log message to show the scope.");
+        {           
 
-            var client = _httpClientFactory.CreateClient("MyClient");
+            var client = _httpClientFactory.CreateClient("MyClient"); // this client will attach the correlation ID header
 
             client.GetAsync("https://www.example.com");
 
