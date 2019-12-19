@@ -1,9 +1,9 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
+using System.Net.Http;
 
 namespace MvcSample.Controllers
 {
@@ -17,16 +17,22 @@ namespace MvcSample.Controllers
         };
 
         private readonly ILogger<WeatherForecastController> _logger;
+        private readonly IHttpClientFactory _httpClientFactory;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
+        public WeatherForecastController(ILogger<WeatherForecastController> logger, IHttpClientFactory httpClientFactory)
         {
             _logger = logger;
+            _httpClientFactory = httpClientFactory;
         }
 
         [HttpGet]
         public IEnumerable<WeatherForecast> Get()
         {
             _logger.LogInformation("This is a log message to show the scope.");
+
+            var client = _httpClientFactory.CreateClient("MyClient");
+
+            client.GetAsync("https://www.example.com");
 
             var rng = new Random();
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast

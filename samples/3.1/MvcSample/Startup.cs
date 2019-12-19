@@ -1,5 +1,6 @@
 using CorrelationId;
 using CorrelationId.DependencyInjection;
+using CorrelationId.HttpClient;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -20,7 +21,13 @@ namespace MvcSample
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddCorrelationId();
+            services.AddTransient<NoOpDelegatingHandler>();
+
+            services.AddHttpClient("MyClient")
+                .AddCorrelationIdForwarding()
+                .AddHttpMessageHandler<NoOpDelegatingHandler>();
+
+            services.AddDefaultCorrelationId();
 
             services.AddControllers();
         }
