@@ -15,12 +15,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CorrelationId.Tests", "test
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{1DC2BB08-1FE8-43B1-BD2E-F55DA4B54038}"
 	ProjectSection(SolutionItems) = preProject
+		docs\index.md = docs\index.md
 		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{5961B376-2D2A-441B-BF59-9A797AC9178B}"
 	ProjectSection(SolutionItems) = preProject
 		.travis.yml = .travis.yml
+		azure-pipelines.yml = azure-pipelines.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2.1", "2.1", "{0537FAD6-C2F9-48A9-A428-43430B079AC6}"
