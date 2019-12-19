@@ -21,7 +21,7 @@ namespace MvcSample
         {
             services.AddMvc();
 
-            services.AddDefaultCorrelationId();
+            services.AddDefaultCorrelationId(opt => opt.UpdateTraceIdentifier = true);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -32,10 +32,7 @@ namespace MvcSample
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseCorrelationId(new CorrelationIdOptions
-            {
-                UpdateTraceIdentifier = true
-            });
+            app.UseCorrelationId();
 
             app.UseMvc();
         }
