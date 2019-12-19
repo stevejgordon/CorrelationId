@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Options;
 using System;
+using CorrelationId.Abstractions;
 
 namespace CorrelationId
 {

@@ -1,6 +1,6 @@
-﻿using CorrelationId;
+﻿using CorrelationId.Abstractions;
 
-namespace MvcCorrelationIdSample
+namespace MvcSample
 {
     public class ScopedClass
     {

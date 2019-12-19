@@ -1,9 +1,10 @@
 ﻿using System;
+using CorrelationId.Abstractions;
 
 namespace CorrelationId
 {
     /// <summary>
-    /// Options for correlation ids.
+    /// Options for correlation IDs.
     /// </summary>
     public class CorrelationIdOptions
     {
@@ -68,18 +69,8 @@ namespace CorrelationId
         public bool UpdateTraceIdentifier { get; set; } = true;
 
         /// <summary>
-        /// <para>
-        /// Controls whether a GUID will be used in cases where no correlation ID is retrieved from the request header.
-        /// When false the TraceIdentifier for the current request will be used.
-        /// </para>
-        /// <para> Default: false.</para>
-        /// </summary>
-        public bool UseGuidForCorrelationId { get; set; } = false;
-
-        /// <summary>
-        /// A function that returns the correlation id in cases where no correlation ID is retrieved from the request header. It can be used to customize the correlation id generation.
-        /// For example, it can return sequential guids such as those provided by https://github.com/richardtallent/RT.Comb
-        /// options.CorrelationIdGenerator = () => RT.Comb.Provider.PostgreSql.Create().ToString("N");
+        /// A function that returns the correlation ID in cases where no correlation ID is retrieved from the request header. It can be used to customise the correlation ID generation.
+        /// When set, this function will be used instead of the registered <see cref="ICorrelationIdProvider"/>.
         /// </summary>
         public Func<string> CorrelationIdGenerator { get; set; }
     }

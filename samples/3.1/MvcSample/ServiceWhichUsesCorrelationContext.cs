@@ -1,4 +1,4 @@
-﻿using CorrelationId;
+﻿using CorrelationId.Abstractions;
 
 namespace MvcSample
 {
