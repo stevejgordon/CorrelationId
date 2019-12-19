@@ -25,6 +25,15 @@ namespace CorrelationId
 
         /// <summary>
         /// <para>
+        /// Enforce the inclusion of the correlation ID request header.
+        /// When true and a correlation ID header is not included, the request will fail with a 400 Bad Request response.
+        /// </para>
+        /// <para>Default: false</para>
+        /// </summary>
+        public bool EnforceHeader { get; set; } = false;
+
+        /// <summary>
+        /// <para>
         /// Controls whether the correlation ID is returned in the response headers.
         /// </para>
         /// <para>Default: true</para>
