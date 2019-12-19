@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CorrelationId.Abstractions;
 
 namespace CorrelationId
 {
@@ -17,6 +18,7 @@ namespace CorrelationId
     {
         private readonly RequestDelegate _next;
         private readonly ILogger _logger;
+        private readonly ICorrelationIdProvider _correlationIdProvider;
         private readonly CorrelationIdOptions _options;
 
         /// <summary>
@@ -25,10 +27,12 @@ namespace CorrelationId
         /// <param name="next">The next middleware in the pipeline.</param>
         /// <param name="logger">The <see cref="ILogger"/> instance to log to.</param>
         /// <param name="options">The configuration options.</param>
-        public CorrelationIdMiddleware(RequestDelegate next, ILogger<CorrelationIdMiddleware> logger, IOptions<CorrelationIdOptions> options)
+        /// <param name="correlationIdProvider"></param>
+        public CorrelationIdMiddleware(RequestDelegate next, ILogger<CorrelationIdMiddleware> logger, IOptions<CorrelationIdOptions> options, ICorrelationIdProvider correlationIdProvider = null)
         {
             _next = next ?? throw new ArgumentNullException(nameof(next));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _correlationIdProvider = correlationIdProvider;
             _options = options.Value ?? throw new ArgumentNullException(nameof(options));
         }
 
@@ -40,6 +44,11 @@ namespace CorrelationId
         /// <param name="correlationContextFactory">The <see cref="ICorrelationContextFactory"/> which can create a <see cref="CorrelationContext"/>.</param>
         public async Task Invoke(HttpContext context, ICorrelationContextFactory correlationContextFactory)
         {
+            if (_correlationIdProvider is null)
+            {
+                throw new InvalidOperationException("No 'ICorrelationIdProvider' has been registered.");
+            }
+
             var hasCorrelationIdHeader = context.Request.Headers.TryGetValue(_options.Header, out var cid) &&
                                            !StringValues.IsNullOrEmpty(cid);
 
@@ -54,7 +63,7 @@ namespace CorrelationId
 
             if (_options.IgnoreRequestHeader || RequiresGenerationOfCorrelationId(hasCorrelationIdHeader, cid))
             {
-                correlationId = GenerateCorrelationId(context.TraceIdentifier);
+                correlationId = GenerateCorrelationId(context);
             }
 
             if (_options.UpdateTraceIdentifier)
@@ -97,11 +106,7 @@ namespace CorrelationId
         private static bool RequiresGenerationOfCorrelationId(bool idInHeader, StringValues idFromHeader) =>
             !idInHeader || StringValues.IsNullOrEmpty(idFromHeader);
 
-        private StringValues GenerateCorrelationId(string traceIdentifier)
-        {
-            if (_options.UseGuidForCorrelationId) return Guid.NewGuid().ToString();
-            if (_options.CorrelationIdGenerator != null) return _options.CorrelationIdGenerator();
-            return string.IsNullOrEmpty(traceIdentifier) ? Guid.NewGuid().ToString() : traceIdentifier;
-        }
+        private StringValues GenerateCorrelationId(HttpContext ctx) => 
+            _options.CorrelationIdGenerator != null ? _options.CorrelationIdGenerator() : _correlationIdProvider.GenerateCorrelationId(ctx);
     }
 }

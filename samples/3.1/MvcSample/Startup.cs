@@ -1,4 +1,5 @@
 using CorrelationId;
+using CorrelationId.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -36,7 +37,7 @@ namespace MvcSample
 
             app.UseCorrelationId(new CorrelationIdOptions
             {
-                EnforceHeader = true,
+                EnforceHeader = false,
                 AddToLoggingScope = true
             });
 

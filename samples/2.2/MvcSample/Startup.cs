@@ -22,10 +22,6 @@ namespace MvcSample
             services.AddMvc();
 
             services.AddDefaultCorrelationId();
-
-            services.AddScoped<ScopedClass>();
-            services.AddTransient<TransientClass>();
-            services.AddSingleton<SingletonClass>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -36,7 +32,10 @@ namespace MvcSample
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseCorrelationId();
+            app.UseCorrelationId(new CorrelationIdOptions
+            {
+                UpdateTraceIdentifier = true
+            });
 
             app.UseMvc();
         }

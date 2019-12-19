@@ -12,6 +12,8 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Xunit;
 using System;
 using System.Net;
+using CorrelationId.Abstractions;
+using CorrelationId.DependencyInjection;
 
 namespace CorrelationId.Tests
 {
@@ -24,7 +26,7 @@ namespace CorrelationId.Tests
 
             var builder = new WebHostBuilder()
                 .Configure(app => app.UseCorrelationId(options))
-                .ConfigureServices(sc => sc.AddCorrelationId());
+                .ConfigureServices(sc => sc.AddDefaultCorrelationId());
 
             var server = new TestServer(builder);
 
@@ -38,7 +40,7 @@ namespace CorrelationId.Tests
         {
             var builder = new WebHostBuilder()
                .Configure(app => app.UseCorrelationId())
-               .ConfigureServices(sc => sc.AddCorrelationId());
+               .ConfigureServices(sc => sc.AddDefaultCorrelationId());
 
             var server = new TestServer(builder);
 
@@ -60,7 +62,7 @@ namespace CorrelationId.Tests
                     app.UseCorrelationId();
                     app.UseCorrelationId(); // header will already be set on this second use of the middleware
                 })
-                .ConfigureServices(sc => sc.AddCorrelationId());
+                .ConfigureServices(sc => sc.AddDefaultCorrelationId());
 
             var server = new TestServer(builder);
 
@@ -76,7 +78,7 @@ namespace CorrelationId.Tests
 
             var builder = new WebHostBuilder()
                .Configure(app => app.UseCorrelationId(options))
-               .ConfigureServices(sc => sc.AddCorrelationId());
+               .ConfigureServices(sc => sc.AddDefaultCorrelationId());
 
             var server = new TestServer(builder);
 
@@ -96,7 +98,7 @@ namespace CorrelationId.Tests
 
             var builder = new WebHostBuilder()
                .Configure(app => app.UseCorrelationId(options))
-               .ConfigureServices(sc => sc.AddCorrelationId());
+               .ConfigureServices(sc => sc.AddDefaultCorrelationId());
 
             var server = new TestServer(builder);
 
@@ -114,7 +116,7 @@ namespace CorrelationId.Tests
 
             var builder = new WebHostBuilder()
                .Configure(app => app.UseCorrelationId(customHeader))
-               .ConfigureServices(sc => sc.AddCorrelationId());
+               .ConfigureServices(sc => sc.AddDefaultCorrelationId());
 
             var server = new TestServer(builder);
 
@@ -133,7 +135,7 @@ namespace CorrelationId.Tests
 
             var builder = new WebHostBuilder()
                .Configure(app => app.UseCorrelationId())
-               .ConfigureServices(sc => sc.AddCorrelationId());
+               .ConfigureServices(sc => sc.AddDefaultCorrelationId());
 
             var server = new TestServer(builder);
 
@@ -148,39 +150,14 @@ namespace CorrelationId.Tests
         }
 
         [Fact]
-        public async Task CorrelationId_SetToGuid_WhenUseGuidForCorrelationId_IsTrue()
+        public async Task CorrelationId_SetToGuid_RegisteredWithAddDefaultCorrelationId()
         {
-            var options = new CorrelationIdOptions { UseGuidForCorrelationId = true };
-
             var builder = new WebHostBuilder()
-                .Configure(app => app.UseCorrelationId(options))
-                .ConfigureServices(sc => sc.AddCorrelationId());
+                .Configure(app => app.UseCorrelationId())
+                .ConfigureServices(sc => sc.AddDefaultCorrelationId());
 
             var server = new TestServer(builder);
             
-            var response = await server.CreateClient().GetAsync("");
-
-            var header = response.Headers.GetValues(new CorrelationIdOptions().Header);
-
-            var isGuid = Guid.TryParse(header.FirstOrDefault(), out _);
-
-            Assert.True(isGuid);
-        }
-
-        [Fact]
-        public async Task CorrelationId_SetToGuid_WhenUseGuidForCorrelationId_IsTrue_EvenIfCorrelationIdGeneratorIsSet()
-        {
-            var options = new CorrelationIdOptions {
-                UseGuidForCorrelationId = true,
-                CorrelationIdGenerator = () => string.Empty
-            };
-
-            var builder = new WebHostBuilder()
-                .Configure(app => app.UseCorrelationId(options))
-                .ConfigureServices(sc => sc.AddCorrelationId());
-
-            var server = new TestServer(builder);
-
             var response = await server.CreateClient().GetAsync("");
 
             var header = response.Headers.GetValues(new CorrelationIdOptions().Header);
@@ -200,7 +177,7 @@ namespace CorrelationId.Tests
 
             var builder = new WebHostBuilder()
                 .Configure(app => app.UseCorrelationId(options))
-                .ConfigureServices(sc => sc.AddCorrelationId());
+                .ConfigureServices(sc => sc.AddDefaultCorrelationId());
 
             var server = new TestServer(builder);
 
@@ -216,11 +193,9 @@ namespace CorrelationId.Tests
         [Fact]
         public async Task CorrelationId_NotSetToGuid_WhenUseGuidForCorrelationId_IsFalse()
         {
-            var options = new CorrelationIdOptions { UseGuidForCorrelationId = false };
-
             var builder = new WebHostBuilder()
-                .Configure(app => app.UseCorrelationId(options))
-                .ConfigureServices(sc => sc.AddCorrelationId());
+                .Configure(app => app.UseCorrelationId())
+                .ConfigureServices(sc => sc.AddCorrelationId().WithTraceIdentifierProvider());
 
             var server = new TestServer(builder);
 
@@ -233,6 +208,22 @@ namespace CorrelationId.Tests
             Assert.False(isGuid);
         }
 
+        [Fact]
+        public async Task CorrelationId_SetUsingCustomProvider_WhenCustomProviderIsRegistered()
+        {
+            var builder = new WebHostBuilder()
+                .Configure(app => app.UseCorrelationId())
+                .ConfigureServices(sc => sc.AddCorrelationId().WithCustomProvider<TestCorrelationIdProvider>());
+
+            var server = new TestServer(builder);
+
+            var response = await server.CreateClient().GetAsync("");
+
+            var header = response.Headers.GetValues(new CorrelationIdOptions().Header);
+
+            Assert.Equal(TestCorrelationIdProvider.FixedCorrelationId, header.FirstOrDefault());
+        }
+        
         [Fact]
         public async Task CorrelationId_ReturnedCorrectlyFromSingletonService()
         {
@@ -254,7 +245,7 @@ namespace CorrelationId.Tests
                 })
                 .ConfigureServices(sc =>
                 {
-                    sc.AddCorrelationId();
+                    sc.AddDefaultCorrelationId();
                     sc.TryAddSingleton<SingletonClass>();
                     sc.TryAddScoped<ScopedClass>();
                 });
@@ -309,7 +300,7 @@ namespace CorrelationId.Tests
                 })
                 .ConfigureServices(sc =>
                 {
-                    sc.AddCorrelationId();
+                    sc.AddDefaultCorrelationId();
                     sc.TryAddTransient<TransientClass>();
                     sc.TryAddScoped<ScopedClass>();
                 });
@@ -360,7 +351,7 @@ namespace CorrelationId.Tests
                         await ctx.Response.WriteAsync(accessor.CorrelationContext.Header);
                     });
                 })
-                .ConfigureServices(sc => sc.AddCorrelationId());
+                .ConfigureServices(sc => sc.AddDefaultCorrelationId());
 
             var server = new TestServer(builder);
 
@@ -389,7 +380,7 @@ namespace CorrelationId.Tests
                         await ctx.Response.WriteAsync(ctx.TraceIdentifier);
                     });
                 })
-                .ConfigureServices(sc => sc.AddCorrelationId());
+                .ConfigureServices(sc => sc.AddDefaultCorrelationId());
 
             var server = new TestServer(builder);
 
@@ -421,7 +412,7 @@ namespace CorrelationId.Tests
                         await ctx.Response.WriteAsync(ctx.TraceIdentifier);
                     });
                 })
-                .ConfigureServices(sc => sc.AddCorrelationId());
+                .ConfigureServices(sc => sc.AddDefaultCorrelationId());
 
             var server = new TestServer(builder);
 
@@ -470,5 +461,13 @@ namespace CorrelationId.Tests
 
             public string GetCorrelationFromScoped => _correlationContext.CorrelationContext.CorrelationId;
         }
+
+        private class TestCorrelationIdProvider : ICorrelationIdProvider
+        {
+            public const string FixedCorrelationId = "TestCorrelationId";
+
+            public string GenerateCorrelationId(HttpContext context) => FixedCorrelationId;
+        }
+
     }
 }

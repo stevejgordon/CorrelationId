@@ -10,16 +10,16 @@ namespace CorrelationId
         /// <summary>
         /// Create a <see cref="CorrelationContext"/> instance.
         /// </summary>
-        /// <param name="correlationId"></param>
-        /// <param name="header"></param>
-        /// <exception cref="ArgumentNullException"></exception>
+        /// <param name="correlationId">The correlation ID on the context.</param>
+        /// <param name="header">The name of the header from which the Correlation ID was read/written.</param>
+        /// <exception cref="ArgumentException">Thrown if the <paramref name="correlationId"/> or <paramref name="header"/> are null or empty.</exception>
         public CorrelationContext(string correlationId, string header)
         {
             if (string.IsNullOrEmpty(correlationId))
-                throw new ArgumentNullException(nameof(correlationId));
+                throw new ArgumentException("A correlation ID must be provided.", nameof(correlationId));
 
             if (string.IsNullOrEmpty(header))
-                throw new ArgumentNullException(nameof(header));
+                throw new ArgumentException("A header must be provided.", nameof(header));
 
             CorrelationId = correlationId;
             Header = header;
@@ -31,7 +31,7 @@ namespace CorrelationId
         public string CorrelationId { get; }
 
         /// <summary>
-        /// The name of the header from which the Correlation ID is read/written.
+        /// The name of the header from which the Correlation ID was read/written.
         /// </summary>
         public string Header { get; }
     }

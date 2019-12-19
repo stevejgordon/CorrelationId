@@ -1,4 +1,4 @@
-﻿namespace CorrelationId
+﻿namespace CorrelationId.Abstractions
 {
     /// <summary>
     /// Provides access to the <see cref="CorrelationContext"/> for the current request.
