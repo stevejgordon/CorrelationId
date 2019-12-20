@@ -8,9 +8,15 @@ namespace CorrelationId
     /// </summary>
     public class CorrelationIdOptions
     {
-        private const string DefaultHeader = "X-Correlation-ID";
+        /// <summary>
+        /// The default header used for correlation ID.
+        /// </summary>
+        public const string DefaultHeader = "X-Correlation-ID";
 
-        private const string LoggerScopeKey = "CorrelationId";
+        /// <summary>
+        /// The default logger scope key for correlation ID logging.
+        /// </summary>
+        public const string LoggerScopeKey = "CorrelationId";
 
         /// <summary>
         /// The name of the header from which the Correlation ID is read.
