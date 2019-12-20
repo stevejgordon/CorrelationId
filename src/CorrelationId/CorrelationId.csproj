@@ -15,14 +15,7 @@
     <DocumentationFile>bin\Release\netstandard2.0\CorrelationId.xml</DocumentationFile>
     <PackageProjectUrl>https://github.com/stevejgordon/CorrelationId</PackageProjectUrl>
     <RepositoryUrl>https://github.com/stevejgordon/CorrelationId</RepositoryUrl>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <LangVersion>latest</LangVersion>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <LangVersion>latest</LangVersion>
+    <LangVersion>8</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
