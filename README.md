@@ -1,15 +1,33 @@
-# Correlation ID Middleware
+# Correlation ID
 
-[![NuGet](https://img.shields.io/nuget/v/CorrelationId.svg)](https://www.nuget.org/packages/CorrelationId)
-[![NuGet](https://img.shields.io/nuget/dt/CorrelationId.svg)](https://www.nuget.org/packages/CorrelationId)
-[![Build Status](https://travis-ci.org/stevejgordon/CorrelationId.svg?branch=dev)](https://travis-ci.org/stevejgordon/CorrelationId)
-[![Build Status](https://stevejgordon.visualstudio.com/CorrelationId/_apis/build/status/stevejgordon.CorrelationId)](https://stevejgordon.visualstudio.com/CorrelationId/_build/latest?definitionId=1)
+Correlations IDs are used in distributed applications to trace requests across multiple services. This library and package provides a lightweight correlation ID approach. When enabled, request headers are checked for a correlation ID from the consumer. If found, this correlation ID is attached to the Correlation Context which can be used to access the current correlation ID where it is required for logging etc.
 
-This repo contains middleware for syncing a TraceIdentity (correlation ID) across ASP.NET Core APIs.
+Optionally, this correlation ID can be attached to downstream HTTP calls made via a `HttpClient` instance created by the `IHttpClientFactory`.
 
-This is intended for cases where you have multiple API services that may pass a single user request (transaction) through a chain of APIs in order to satisfy the final result. For example, a front end API may be called from a browser, which then in turn calls a backend API to gather some required data.
+## Release Notes
 
-The TraceIdentifier on the HttpContext will be used for new requests and additionally set a header on the response. In cases where the incoming request includes an existing correlation ID in the header, the TraceIdentifier will be updated to that ID. This allows logging and diagnostics to be correlated for a single user transaction and to track the path of a user request through multiple API services.
+[Change history and release notes](https://stevejgordon.github.io/CorrelationId/releasenotes).
+
+## Supported Runtimes
+- .NET Standard 2.0+
+
+| Package | NuGet Stable | NuGet Pre-release | Downloads | Travis CI | Azure Pipelines |
+| ------- | ------------ | ----------------- | --------- | --------- | ----------------|
+| [CorrelationId](https://www.nuget.org/packages/CorrelationId/) | [![NuGet](https://img.shields.io/nuget/v/CorrelationId.svg)](https://www.nuget.org/packages/CorrelationId) | [![NuGet](https://img.shields.io/nuget/vpre/CorrelationId.svg)](https://www.nuget.org/packages/CorrelationId) | [![Nuget](https://img.shields.io/nuget/dt/CorrelationId.svg)](https://www.nuget.org/packages/CorrelationId) | [![Build Status](https://travis-ci.org/stevejgordon/CorrelationId.svg?branch=master)](https://travis-ci.org/stevejgordon/CorrelationId) | [![Build Status](https://dev.azure.com/stevejgordon/CorrelationId/_apis/build/status/stevejgordon.CorrelationId?branchName=master)](https://dev.azure.com/stevejgordon/CorrelationId/_build/latest?definitionId=1&branchName=master) |
+
+## Installation
+
+You should install [CorrelationId from NuGet](https://www.nuget.org/packages/CorrelationId/):
+
+```ps
+Install-Package CorrelationId
+```
+
+This command from Package Manager Console will download and install CorrelationId and all required dependencies.
+
+All stable and some pre-release packages are available on NuGet. 
+
+## Usage
 
 Examples in the [wiki](https://github.com/stevejgordon/CorrelationId/wiki).
 
@@ -17,21 +35,8 @@ Examples in the [wiki](https://github.com/stevejgordon/CorrelationId/wiki).
 
 It appears that a [regression in the code for ASP.NET Core 2.2.0](https://github.com/aspnet/AspNetCore/issues/5144) means that setting the TraceIdentifier on the context via middleware results in the context becoming null when accessed further down in the pipeline. A fix is ready for 3.0.0 and the team plan to back-port this for the 2.2.2 release timeframe.
 
-A workaround at this time is to disable the behaviour of updating the TraceIdentifier using the options when adding the middleware...
+A workaround at this time is to disable the behaviour of updating the TraceIdentifier using the options when adding the middleware.
 
-```
-app.UseCorrelationId(new CorrelationIdOptions
-{
-	Header = "X-Correlation-ID",
-	UseGuidForCorrelationId = true,
-	UpdateTraceIdentifier = false
-});
-```
+## Support
 
-## Installation
-
-You should install [CorrelationId with NuGet](https://www.nuget.org/packages/CorrelationId/):
-
-    Install-Package CorrelationId
-
-This command from Package Manager Console will download and install CorrelationId and all required dependencies.
+If this library has helped you, feel free to [buy me a coffee](https://www.buymeacoffee.com/stevejgordon) or see the "Sponsor" link [at the top of the GitHub page](https://github.com/stevejgordon/CorrelationId).
