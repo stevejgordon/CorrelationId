@@ -7,4 +7,4 @@ The correlation ID library provides a lightweight solution to parse a configurab
 
 ## Release Notes
 
-TODO
+[Change history release notes](https://stevejgordon.github.io/CorrelationId/releasenotes)
