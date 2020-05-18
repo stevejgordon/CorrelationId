@@ -19,21 +19,21 @@ namespace CorrelationId
         public const string LoggerScopeKey = "CorrelationId";
 
         /// <summary>
-        /// The name of the header from which the Correlation ID is read.
+        /// The name of the header from which the Correlation ID is read from the request.
         /// </summary>
         public string RequestHeader { get; set; } = DefaultHeader;
 
         private string _responseHeader = null;
 
         /// <summary>
-        /// The name of the header from which the Correlation ID is written.
+        /// The name of the header to which the Correlation ID is written for the response.
         /// </summary>
         public string ResponseHeader { get => _responseHeader ?? RequestHeader; set => _responseHeader = value; }
 
         /// <summary>
         /// <para>
         /// Ignore request header.
-        /// When true the TraceIdentifier for the current request ignores the header from request.
+        /// When true, the correlation ID for the current request ignores the correlation ID header value on the request.
         /// </para>
         /// <para>Default: false</para>
         /// </summary>

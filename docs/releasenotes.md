@@ -4,11 +4,11 @@ Packages are available on NuGet: [CorrelationId](https://www.nuget.org/packages/
 
 ## v3.0.0-preview.1
 
-A number of requested features have been added which provide more control over correlation ID generation and customisation.
+Several requested features have been added which provide more control over correlation ID generation and customisation.
 
-This release includes a number of breaking changes and upgrading will require some changes to consuming code.
+This release includes several breaking changes, and upgrading will require some changes to consuming code.
 
-A major new feature in this release is the concept of an `ICorrelationIdProvider`. This interface defines an abstracion for generating correlation IDs. The library includes two provider implementations which include the previous behaviour. The `GuidCorrelationIdProvider`, when registered will generate new GUID-based correlations IDs. The `TraceIdCorrelationIdProvider` will generate the correlation ID, setting it to the saem value as the TraceIdentifier string on the `HttpContext`.
+A major new feature in this release is the concept of an `ICorrelationIdProvider`. This interface defines an abstraction for generating correlation IDs. The library includes two provider implementations which include the previous behaviour. The `GuidCorrelationIdProvider`, when registered will generate new GUID-based correlations IDs. The `TraceIdCorrelationIdProvider` will generate the correlation ID, setting it to the same value as the TraceIdentifier string on the `HttpContext`.
 
 Only one provider may be registered. Registering multiple providers will cause an `InvalidOperationException` to be thrown.
 
@@ -16,13 +16,13 @@ Only one provider may be registered. Registering multiple providers will cause a
 
 ### Registering services
 
-Changes have been made to the registation methods on the `IServiceCollection` to support the new providers concept.
+Changes have been made to the registration methods on the `IServiceCollection` to support the new providers concept.
 
-When registering the required correlation ID services by calling the `AddCorrelationId` method, this now returns an `ICorrelationIdBuilder` that supports additional methods that can be used to configure the provider which will be used. This method does not set a default provider so it is expected that one of the appropriate `ICorrelationIdBuilder` builder methods be called.
+When registering the required correlation ID services by calling the `AddCorrelationId` method, this now returns an `ICorrelationIdBuilder` that supports additional methods that can be used to configure the provider, which will be used. This method does not set a default provider, so it is expected that one of the appropriate `ICorrelationIdBuilder` builder methods be called.
 
-Alternatively, the `AddCorrelationId<T>` method can be called which accepts the type to use for the `ICorrelationIdProvider`.
+Alternatively, the `AddCorrelationId<T>` method can be called, which accepts the type to use for the `ICorrelationIdProvider`.
 
-Finally, the `AddDefaultCorrelationId` method may be used which returns the `IServiceCollection` and which does not support further configuration of the correlation ID configuration using the builder. In this case, the default provider will be the `GuidCorrelationIdProvider`. This method exists for those wanting to chain `IServiceCollection` extension methods and where the default GUID provider is suitable.
+Finally, the `AddDefaultCorrelationId` method may be used, which returns the `IServiceCollection` and which does not support further configuration of the correlation ID configuration using the builder. In this case, the default provider will be the `GuidCorrelationIdProvider`. This method exists for those wanting to chain `IServiceCollection` extension methods and where the default GUID provider is suitable.
 
 ### Configuration Options
 
