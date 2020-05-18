@@ -65,7 +65,7 @@ public class TransientClass
 
 See the [sample app](https://github.com/stevejgordon/CorrelationId/tree/master/samples/3.1/MvcSample) for example usage.
 
-Full documentation can be found in the [wiki](https://github.com/stevejgordon/CorrelationId/wiki).
+Full documentation can be found in the [wiki](https://github.com/stevejgordon/CorrelationId/wiki/v3.0-(Current)).
 
 ## Known Issue with ASP.NET Core 2.2.0
 
