@@ -2,7 +2,7 @@
 
 Packages are available on NuGet: [CorrelationId](https://www.nuget.org/packages/CorrelationId/).
 
-## v3.0.0-preview.1
+## v3.0.0
 
 Several requested features have been added which provide more control over correlation ID generation and customisation.
 
