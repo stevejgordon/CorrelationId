@@ -27,13 +27,49 @@ This command from Package Manager Console will download and install CorrelationI
 
 All stable and some pre-release packages are available on NuGet. 
 
-## Usage
+## Quick Start
 
-Examples in the [wiki](https://github.com/stevejgordon/CorrelationId/wiki).
+### Register with DI
+
+Inside `ConfigureServices` add the required correlation ID services, with common defaults.
+
+```csharp
+services.AddDefaultCorrelationId
+```
+
+This registers a correlation ID provider which generates new IDs based on a random GUID.
+
+### Add the middleware
+
+Register the middleware into the pipeline. This should occur before any downstream middleware which requires the correlation ID. Normally this will be registered very early in the middleware pipeline.
+
+```csharp
+app.UseCorrelationId();
+```
+
+Where you need to access the correlation ID, you may request the `ICorrelationContextAccessor` from DI.
+
+```csharp
+public class TransientClass
+{
+   private readonly ICorrelationContextAccessor _correlationContext;
+
+   public TransientClass(ICorrelationContextAccessor correlationContext)
+   {
+	  _correlationContext = correlationContext;
+   }
+
+   ...
+}
+```
+
+See the [sample app](https://github.com/stevejgordon/CorrelationId/tree/master/samples/3.1/MvcSample) for example usage.
+
+Full documentation can be found in the [wiki](https://github.com/stevejgordon/CorrelationId/wiki).
 
 ## Known Issue with ASP.NET Core 2.2.0
 
-It appears that a [regression in the code for ASP.NET Core 2.2.0](https://github.com/aspnet/AspNetCore/issues/5144) means that setting the TraceIdentifier on the context via middleware results in the context becoming null when accessed further down in the pipeline. A fix is ready for 3.0.0 and the team plan to back-port this for the 2.2.2 release timeframe.
+It appears that a [regression in the code for ASP.NET Core 2.2.0](https://github.com/aspnet/AspNetCore/issues/5144) means that setting the TraceIdentifier on the context via middleware results in the context becoming null when accessed further down in the pipeline. A fix is was released in 2.2.2.
 
 A workaround at this time is to disable the behaviour of updating the TraceIdentifier using the options when adding the middleware.
 
