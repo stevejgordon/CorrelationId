@@ -51,7 +51,7 @@ services.AddDefaultCorrelationId(options =>
 
 *New Options*
 
-* Added `ResponseHeader` - The name of the header to which the Correlation ID is written. This change supports scenarios where it is neccesary to read from one header but return the correlation ID using a difference header name. Defaults to the same value as the `RequestHeader` unless specifically set.
+* Added `ResponseHeader` - The name of the header to which the Correlation ID is written. This change supports scenarios where it is necessary to read from one header but return the correlation ID using a different header name. Defaults to the same value as the `RequestHeader` unless specifically set.
 * Added `IgnoreRequestHeader` - When `true` the incoming correlation ID in the `RequestHeader` is ignored and a new correlation ID is generated.
 * Added `EnforceHeader` - Enforces the inclusion of the correlation ID request header. When `true` and a correlation ID header is not included, the request will fail with a 400 Bad Request response.
 * Added `AddToLoggingScope` - Add the correlation ID value to the logger scope for all requests. When `true` the value of the correlation ID will be added to the logger scope payload.
@@ -60,7 +60,7 @@ services.AddDefaultCorrelationId(options =>
 
 ### CorrelationContext
 
-The constructor for this type has been made public (previously internal) to support creation of `CorrelationContext` instances when unit testing code which depends on the `ICorrelationContextAccessor`. This makes mocking the `ICorrelationContextAccessor` a much easier task.
+The constructor for this type has been made public (previously internal) to support the creation of `CorrelationContext` instances when unit testing code which depends on the `ICorrelationContextAccessor`. This makes mocking the `ICorrelationContextAccessor` a much easier task.
 
 ### IApplicationBuilder Extension Methods
 
@@ -73,14 +73,14 @@ The overloads of the `UseCorrelationId` methods have been removed as options are
 
 **Potential breaking changes**
 
-Unfortunately, despite this being a minor release a potential breaking change has slipped in. The Create method on the CorrelationContextFactory requires two arguments (previously one). If you are mocking or using this class directly then this change may affect you.
+Unfortunately, despite this being a minor release, a potential breaking change has slipped in. The Create method on the CorrelationContextFactory requires two arguments (previously one). If you are mocking or using this class directly, then this change may affect you.
 
 * Adds a new option `UpdateTraceIdentifier`: Controls whether the ASP.NET Core TraceIdentifier will be set to match the CorrelationId. The default value is `true`.
-* Adds a new option `UseGuidForCorrelationId` : Controls whether a GUID will be used in cases where no correlation ID is retrieved from the request header. When false the TraceIdentifier for the current request will be used. The default value is `false`.
+* Adds a new option `UseGuidForCorrelationId`: Controls whether a GUID will be used in cases where no correlation ID is retrieved from the request header. The default value is `false`.
 
 ## 2.0.1
 
-* Non breaking change to include the correct project and repo URLs in the NuGet package information.
+* Non-breaking change to include the correct project and repo URLs in the NuGet package information.
 
 ## 2.0.0
 
@@ -94,7 +94,7 @@ Consuming classes can now include a constructor dependency for `ICorrelationCont
 
 ## v1.0.1
 
-* Fix #3 - Avoid setting reponse header if it is already set
+* Fix #3 - Avoid setting response header if it is already set
 
 ## v1.0.0
 
