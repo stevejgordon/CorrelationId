@@ -28,7 +28,7 @@ namespace MvcSample
                 .AddHttpMessageHandler<NoOpDelegatingHandler>();
                        
             // Example of adding default correlation ID (using the GUID generator) services
-            // As shown here, options can be configured via the configure degelate overload
+            // As shown here, options can be configured via the configure delegate overload
             services.AddDefaultCorrelationId(options =>
             { 
                 options.CorrelationIdGenerator = () => "Foo";

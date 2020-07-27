@@ -27,8 +27,7 @@ namespace MvcSample.Controllers
 
         [HttpGet]
         public IEnumerable<WeatherForecast> Get()
-        {           
-
+        {
             var client = _httpClientFactory.CreateClient("MyClient"); // this client will attach the correlation ID header
 
             client.GetAsync("https://www.example.com");
