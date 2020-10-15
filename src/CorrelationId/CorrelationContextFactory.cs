@@ -3,9 +3,9 @@
 namespace CorrelationId
 {
     /// <inheritdoc />
-    public class CorrelationContextFactory : ICorrelationContextFactory
+    internal sealed class CorrelationContextFactory : ICorrelationContextFactory
     {
-        private readonly ICorrelationContextAccessor _correlationContextAccessor;
+        private readonly IMutableCorrelationContextAccessor _correlationContextAccessor;
 
         /// <summary>
         /// Initialises a new instance of <see cref="CorrelationContextFactory" />.
@@ -18,7 +18,7 @@ namespace CorrelationId
         /// Initialises a new instance of the <see cref="CorrelationContextFactory"/> class.
         /// </summary>
         /// <param name="correlationContextAccessor">The <see cref="ICorrelationContextAccessor"/> through which the <see cref="CorrelationContext"/> will be set.</param>
-        public CorrelationContextFactory(ICorrelationContextAccessor correlationContextAccessor)
+        public CorrelationContextFactory(IMutableCorrelationContextAccessor correlationContextAccessor)
         {
             _correlationContextAccessor = correlationContextAccessor;
         }

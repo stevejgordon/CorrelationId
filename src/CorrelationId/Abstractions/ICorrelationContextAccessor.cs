@@ -8,6 +8,6 @@
         /// <summary>
         /// The <see cref="CorrelationContext"/> for the current request.
         /// </summary>
-        CorrelationContext CorrelationContext { get; set; }
+        CorrelationContext CorrelationContext { get; }
     }
 }
