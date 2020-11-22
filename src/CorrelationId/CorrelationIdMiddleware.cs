@@ -190,12 +190,12 @@ namespace CorrelationId
                 "Correlation ID header is enforced but no Correlation ID was not found in the request headers");
 
             private static readonly Action<ILogger, string, Exception> _foundCorrelationIdHeader = LoggerMessage.Define<string>(
-                LogLevel.Information,
+                LogLevel.Debug,
                 EventIds.FoundCorrelationIdHeader,
                 "Correlation ID {CorrelationId} was found in the request headers");
 
             private static readonly Action<ILogger, Exception> _missingCorrelationIdHeader = LoggerMessage.Define(
-                LogLevel.Information,
+                LogLevel.Debug,
                 EventIds.MissingCorrelationIdHeader,
                 "No correlation ID was found in the request headers");
 
