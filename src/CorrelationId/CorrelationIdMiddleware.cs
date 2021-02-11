@@ -110,7 +110,7 @@ namespace CorrelationId
 
             if (_options.AddToLoggingScope && !string.IsNullOrEmpty(_options.LoggingScopeKey) && !string.IsNullOrEmpty(correlationId))
             {
-                using (_logger.BeginScope(new FormatableDictionary<string, object>
+                using (_logger.BeginScope(new FormattedDictionary<string, object>
                 {
                     [_options.LoggingScopeKey] = correlationId
                 }))
