@@ -4,6 +4,8 @@ Correlations IDs are used in distributed applications to trace requests across m
 
 Optionally, this correlation ID can be attached to downstream HTTP calls made via a `HttpClient` instance created by the `IHttpClientFactory`.
 
+**NOTE: While I plan to add a few more features to this library, I believe it is close to feature complete for the scenario it was designed for. I recommend looking at [built-in tracing for .NET apps](https://devblogs.microsoft.com/aspnet/observability-asp-net-core-apps/#adding-tracing-to-a-net-core-application) for more complete and automated application tracing.**
+
 ## Release Notes
 
 [Change history and release notes](https://stevejgordon.github.io/CorrelationId/releasenotes).
