@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 namespace CorrelationId.Abstractions
 {
@@ -12,6 +13,6 @@ namespace CorrelationId.Abstractions
         /// </summary>
         /// <param name="context">The <see cref="HttpContext"/> of the current request.</param>
         /// <returns>A string representing the correlation ID.</returns>
-        string GenerateCorrelationId(HttpContext context);
+        Task<string> GenerateCorrelationId(HttpContext context);
     }
 }

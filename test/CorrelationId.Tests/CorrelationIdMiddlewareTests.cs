@@ -641,7 +641,7 @@ namespace CorrelationId.Tests
         {
             public const string FixedCorrelationId = "TestCorrelationId";
 
-            public string GenerateCorrelationId(HttpContext context) => FixedCorrelationId;
+            public Task<string> GenerateCorrelationId(HttpContext context) => Task.FromResult(FixedCorrelationId);
         }
 
     }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using CorrelationId.Abstractions;
 using Microsoft.AspNetCore.Http;
 
@@ -10,6 +11,6 @@ namespace CorrelationId.Providers
     public class GuidCorrelationIdProvider : ICorrelationIdProvider
     {
         /// <inheritdoc />
-        public string GenerateCorrelationId(HttpContext ctx) => Guid.NewGuid().ToString();
+        public Task<string> GenerateCorrelationId(HttpContext _) => Task.FromResult(Guid.NewGuid().ToString());
     }
 }
