@@ -27,8 +27,11 @@ namespace CorrelationId.DependencyInjection
             {
                 throw new ArgumentNullException(nameof(services));
             }
-
-            services.TryAddSingleton<ICorrelationContextAccessor, CorrelationContextAccessor>();
+            
+            services.TryAddSingleton<AsyncLocalCorrelationContextAccessor>();
+            services.TryAddSingleton<IMutableCorrelationContextAccessor>(sp => sp.GetService<AsyncLocalCorrelationContextAccessor>());
+            services.TryAddSingleton<ICorrelationContextAccessor>(sp => sp.GetService<AsyncLocalCorrelationContextAccessor>());
+            
             services.TryAddTransient<ICorrelationContextFactory, CorrelationContextFactory>();
 
             return new CorrelationIdBuilder(services);
