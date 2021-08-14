@@ -7,11 +7,11 @@
     <Company>Steve Gordon | www.stevejgordon.co.uk</Company>
     <Product>CorrelationId Middleware for ASP.NET Core</Product>
     <Description>ASP.NET Core correlation ID middleware for distributed microservices.</Description>
-    <Copyright>© Steve Gordon 2017-2020. All rights reserved.</Copyright>
+    <Copyright>© Steve Gordon 2017-2021. All rights reserved.</Copyright>
     <RepositoryType>git</RepositoryType>
     <PackageTags>aspnetcore;correlationid</PackageTags>
     <NeutralLanguage>en</NeutralLanguage>
-    <Version>3.0.0</Version>
+    <Version>3.0.1</Version>
     <DocumentationFile>bin\Release\netstandard2.0\CorrelationId.xml</DocumentationFile>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
