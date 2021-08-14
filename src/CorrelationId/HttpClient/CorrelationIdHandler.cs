@@ -17,7 +17,9 @@ namespace CorrelationId.HttpClient
         /// <inheritdoc cref="DelegatingHandler"/>
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            if (!request.Headers.Contains(_correlationContextAccessor.CorrelationContext.Header))
+            string correlationId = _correlationContextAccessor?.CorrelationContext?.CorrelationId;
+            if (!string.IsNullOrEmpty(correlationId) 
+                && !request.Headers.Contains(_correlationContextAccessor.CorrelationContext.Header))
             {
                 request.Headers.Add(_correlationContextAccessor.CorrelationContext.Header, _correlationContextAccessor.CorrelationContext.CorrelationId);
             }
