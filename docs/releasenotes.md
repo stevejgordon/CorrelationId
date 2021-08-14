@@ -2,6 +2,12 @@
 
 Packages are available on NuGet: [CorrelationId](https://www.nuget.org/packages/CorrelationId/).
 
+## v3.0.1
+
+### Bug Fixes
+
+* Do not throw exception when Correlation accessor has Context as null - [#96](https://github.com/stevejgordon/CorrelationId/pull/96)
+
 ## v3.0.0
 
 Several requested features have been added which provide more control over correlation ID generation and customisation.
