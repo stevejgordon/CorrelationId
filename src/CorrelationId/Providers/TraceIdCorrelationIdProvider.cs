@@ -1,4 +1,5 @@
-﻿using CorrelationId.Abstractions;
+﻿using System.Threading.Tasks;
+using CorrelationId.Abstractions;
 using Microsoft.AspNetCore.Http;
 
 namespace CorrelationId.Providers
@@ -9,6 +10,6 @@ namespace CorrelationId.Providers
     public class TraceIdCorrelationIdProvider : ICorrelationIdProvider
     {
         /// <inheritdoc />
-        public string GenerateCorrelationId(HttpContext ctx) => ctx.TraceIdentifier;
+        public Task<string> GenerateCorrelationId(HttpContext ctx) => Task.FromResult(ctx.TraceIdentifier);
     }
 }
