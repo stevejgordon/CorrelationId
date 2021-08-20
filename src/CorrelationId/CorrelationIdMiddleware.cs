@@ -11,7 +11,7 @@ using CorrelationId.Abstractions;
 namespace CorrelationId
 {
     /// <summary>
-    /// Middleware which attempts to reads / creates a Correlation ID that can then be used in logs and 
+    /// Middleware which attempts to reads / creates a Correlation ID that can then be used in logs and
     /// passed to upstream requests.
     /// </summary>
     public class CorrelationIdMiddleware
@@ -37,7 +37,7 @@ namespace CorrelationId
         }
 
         /// <summary>
-        /// Processes a request to synchronise TraceIdentifier and Correlation ID headers. Also creates a 
+        /// Processes a request to synchronise TraceIdentifier and Correlation ID headers. Also creates a
         /// <see cref="CorrelationContext"/> for the current request and disposes of it when the request is completing.
         /// </summary>
         /// <param name="context">The <see cref="HttpContext"/> for the current request.</param>
@@ -107,10 +107,10 @@ namespace CorrelationId
                     return Task.CompletedTask;
                 });
             }
-            
+
             if (_options.AddToLoggingScope && !string.IsNullOrEmpty(_options.LoggingScopeKey) && !string.IsNullOrEmpty(correlationId))
             {
-                using (_logger.BeginScope(new Dictionary<string, object>
+                using (_logger.BeginScope(new FormattedDictionary<string, object>
                 {
                     [_options.LoggingScopeKey] = correlationId
                 }))
@@ -231,7 +231,7 @@ namespace CorrelationId
 
             public static void CorrelationIdProcessingBegin(ILogger logger)
             {
-                if(logger.IsEnabled(LogLevel.Debug)) _correlationIdProcessingBegin(logger, null);
+                if (logger.IsEnabled(LogLevel.Debug)) _correlationIdProcessingBegin(logger, null);
             }
 
             public static void CorrelationIdProcessingEnd(ILogger logger, string correlationId)
