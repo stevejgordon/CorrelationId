@@ -1,15 +1,16 @@
-﻿using System;
-using CorrelationId.Abstractions;
+﻿using CorrelationId.Abstractions;
 using Microsoft.AspNetCore.Http;
 
-namespace CorrelationId.Providers
+namespace CorrelationId.Providers;
+
+/// <summary>
+///     Generates a correlation ID using a new GUID.
+/// </summary>
+public class GuidCorrelationIdProvider : ICorrelationIdProvider
 {
-    /// <summary>
-    /// Generates a correlation ID using a new GUID.
-    /// </summary>
-    public class GuidCorrelationIdProvider : ICorrelationIdProvider
+    /// <inheritdoc />
+    public string GenerateCorrelationId(HttpContext httpContext)
     {
-        /// <inheritdoc />
-        public string GenerateCorrelationId(HttpContext ctx) => Guid.NewGuid().ToString();
+        return Guid.NewGuid().ToString();
     }
 }

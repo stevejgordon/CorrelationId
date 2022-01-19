@@ -450,7 +450,8 @@ namespace CorrelationId.Tests
 
                     app.Use(async (ctx, next) =>
                     {
-                        var accessor = ctx.RequestServices.GetService<ICorrelationContextAccessor>();
+                        await next.Invoke();
+                        var accessor = ctx.RequestServices.GetRequiredService<ICorrelationContextAccessor>();
                         ctx.Response.StatusCode = StatusCodes.Status200OK;
                         await ctx.Response.WriteAsync(accessor.CorrelationContext.Header);
                     });
@@ -485,10 +486,11 @@ namespace CorrelationId.Tests
 
                     app.UseCorrelationId();
 
-                    app.Use((ctx, next) =>
+                    app.Use(async (ctx, next) =>
                     {
                         traceIdentifier = ctx.TraceIdentifier;
-                        return Task.CompletedTask;
+                        await next.Invoke();
+                        await Task.CompletedTask;
                     });
                 })
                 .ConfigureServices(sc => sc.AddDefaultCorrelationId(options => options.UpdateTraceIdentifier = false));
@@ -499,7 +501,7 @@ namespace CorrelationId.Tests
             request.Headers.Add(CorrelationIdOptions.DefaultHeader, correlationId);
 
             await server.CreateClient().SendAsync(request);
-            
+
             Assert.Equal(originalTraceIdentifier, traceIdentifier);
         }
 
@@ -508,7 +510,7 @@ namespace CorrelationId.Tests
         {
             string originalTraceIdentifier = null;
             string traceIdentifier = null;
-            
+
             var builder = new WebHostBuilder()
                 .Configure(app =>
                 {
@@ -520,10 +522,11 @@ namespace CorrelationId.Tests
 
                     app.UseCorrelationId();
 
-                    app.Use((ctx, next) =>
+                    app.Use(async (ctx, next) =>
                     {
                         traceIdentifier = ctx.TraceIdentifier;
-                        return Task.CompletedTask;
+                        await next.Invoke();
+                        await Task.CompletedTask;
                     });
                 })
                 .ConfigureServices(sc => sc.AddDefaultCorrelationId(options => options.UpdateTraceIdentifier = true));
@@ -555,16 +558,17 @@ namespace CorrelationId.Tests
 
                     app.UseCorrelationId();
 
-                    app.Use((ctx, next) =>
+                    app.Use(async (ctx, next) =>
                     {
                         traceIdentifier = ctx.TraceIdentifier;
-                        return Task.CompletedTask;
+                        await next.Invoke();
+                        await Task.CompletedTask;
                     });
                 })
                 .ConfigureServices(sc => sc.AddDefaultCorrelationId(options => { options.UpdateTraceIdentifier = true; options.CorrelationIdGenerator = () => null; }));
 
             using var server = new TestServer(builder);
-            
+
             await server.CreateClient().GetAsync("");
 
             Assert.Equal(originalTraceIdentifier, traceIdentifier);
@@ -583,10 +587,11 @@ namespace CorrelationId.Tests
                 {
                     app.UseCorrelationId();
 
-                    app.Use((ctx, next) =>
+                    app.Use(async (ctx, next) =>
                     {
                         traceIdentifier = ctx.TraceIdentifier;
-                        return Task.CompletedTask;
+                        await next.Invoke();
+                        await Task.CompletedTask;
                     });
                 })
                 .ConfigureServices(sc => sc.AddDefaultCorrelationId(options => options.UpdateTraceIdentifier = true));
@@ -597,7 +602,7 @@ namespace CorrelationId.Tests
             request.Headers.Add(expectedHeaderName, correlationId);
 
             await server.CreateClient().SendAsync(request);
-            
+
             Assert.Equal(correlationId, traceIdentifier);
         }
 
@@ -641,7 +646,7 @@ namespace CorrelationId.Tests
         {
             public const string FixedCorrelationId = "TestCorrelationId";
 
-            public string GenerateCorrelationId(HttpContext context) => FixedCorrelationId;
+            public string GenerateCorrelationId(HttpContext httpContext) => FixedCorrelationId;
         }
 
     }

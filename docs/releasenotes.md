@@ -2,6 +2,37 @@
 
 Packages are available on NuGet: [CorrelationId](https://www.nuget.org/packages/CorrelationId/).
 
+## v4.0.0
+
+### .NET 6 Upgrade
+
+* All components are fully upgraded to .NET 6.0, including the sample.
+
+### Configuration Options
+
+* Added a new option to set log level severity when a correlation ID is found in the header or a correlation ID is missing from the header. 
+
+```
+    options.CorrelationIdGenerator = () => "Foo";
+    options.AddToLoggingScope = true;
+    options.EnforceHeader = false; //set true to enforce the correlation ID
+    options.IgnoreRequestHeader = false;
+    options.IncludeInResponse = true;
+    options.RequestHeader = "My-Custom-Correlation-Id";
+    options.ResponseHeader = "X-Correlation-Id";
+    options.UpdateTraceIdentifier = false;
+    **
+    options.LogLevelOptions = new CorrelationIdLogLevelOptions
+    {
+        //set log level severity
+        FoundCorrelationIdHeader = LogLevel.Debug,  
+        MissingCorrelationIdHeader = LogLevel.Debug
+    };
+    **
+```
+
+## v3.0.0
+
 ## v3.0.1
 
 ### Bug Fixes
