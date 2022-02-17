@@ -10,8 +10,7 @@ namespace CorrelationId.Abstractions
         /// <summary>
         /// Generates a correlation ID string for the current request.
         /// </summary>
-        /// <param name="context">The <see cref="HttpContext"/> of the current request.</param>
         /// <returns>A string representing the correlation ID.</returns>
-        string GenerateCorrelationId(HttpContext context);
+        string GenerateCorrelationId();
     }
 }
