@@ -80,7 +80,7 @@ namespace CorrelationId
 
             if (_options.IgnoreRequestHeader || RequiresGenerationOfCorrelationId(hasCorrelationIdHeader, cid))
             {
-                correlationId = GenerateCorrelationId(context);
+                correlationId = GenerateCorrelationId();
             }
 
             if (!string.IsNullOrEmpty(correlationId) && _options.UpdateTraceIdentifier)
@@ -132,7 +132,7 @@ namespace CorrelationId
         private static bool RequiresGenerationOfCorrelationId(bool idInHeader, StringValues idFromHeader) =>
             !idInHeader || StringValues.IsNullOrEmpty(idFromHeader);
 
-        private string GenerateCorrelationId(HttpContext ctx)
+        private string GenerateCorrelationId()
         {
             string correlationId;
 
@@ -143,7 +143,7 @@ namespace CorrelationId
                 return correlationId;
             }
 
-            correlationId = _correlationIdProvider.GenerateCorrelationId(ctx);
+            correlationId = _correlationIdProvider.GenerateCorrelationId();
             Log.GeneratedHeaderUsingProvider(_logger, correlationId, _correlationIdProvider.GetType());
             return correlationId;
         }

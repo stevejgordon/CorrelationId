@@ -10,6 +10,6 @@ namespace CorrelationId.Providers
     public class GuidCorrelationIdProvider : ICorrelationIdProvider
     {
         /// <inheritdoc />
-        public string GenerateCorrelationId(HttpContext ctx) => Guid.NewGuid().ToString();
+        public string GenerateCorrelationId() => Guid.NewGuid().ToString();
     }
 }

@@ -3,6 +3,7 @@ using CorrelationId.Providers;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System;
 using System.Linq;
+using Microsoft.AspNetCore.Http;
 
 namespace CorrelationId.DependencyInjection
 {
@@ -74,6 +75,7 @@ namespace CorrelationId.DependencyInjection
                 throw new InvalidOperationException("A provider has already been added.");
             }
 
+            builder.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             builder.Services.TryAddSingleton<ICorrelationIdProvider, TraceIdCorrelationIdProvider>();
 
             return builder;
