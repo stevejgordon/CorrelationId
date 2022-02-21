@@ -1,18 +1,16 @@
-﻿using System.Threading;
-using CorrelationId.Abstractions;
+﻿using CorrelationId.Abstractions;
 
-namespace CorrelationId
+namespace CorrelationId;
+
+/// <inheritdoc />
+public class CorrelationContextAccessor : ICorrelationContextAccessor
 {
-    /// <inheritdoc />
-    public class CorrelationContextAccessor : ICorrelationContextAccessor
-    {
-        private static AsyncLocal<CorrelationContext> _correlationContext = new AsyncLocal<CorrelationContext>();
+    private static readonly AsyncLocal<CorrelationContext> _correlationContext = new();
 
-        /// <inheritdoc />
-        public CorrelationContext CorrelationContext
-        {
-            get => _correlationContext.Value;
-            set => _correlationContext.Value = value;
-        }
+    /// <inheritdoc />
+    public CorrelationContext CorrelationContext
+    {
+        get => _correlationContext.Value;
+        set => _correlationContext.Value = value;
     }
 }
