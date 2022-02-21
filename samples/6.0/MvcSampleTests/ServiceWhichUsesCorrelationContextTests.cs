@@ -2,6 +2,7 @@ using CorrelationId;
 using CorrelationId.Abstractions;
 using Moq;
 using MvcSample;
+using Xunit;
 
 namespace MvcSampleTests;
 

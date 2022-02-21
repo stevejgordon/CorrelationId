@@ -8,9 +8,19 @@ namespace CorrelationId.Providers;
 /// </summary>
 public class TraceIdCorrelationIdProvider : ICorrelationIdProvider
 {
-    /// <inheritdoc />
-    public string GenerateCorrelationId(HttpContext httpContext)
+    private readonly IHttpContextAccessor _httpContextAccessor;
+
+    /// <summary>
+    /// </summary>
+    /// <param name="httpContextAccessor"></param>
+    public TraceIdCorrelationIdProvider(IHttpContextAccessor httpContextAccessor)
     {
-        return httpContext.TraceIdentifier;
+        _httpContextAccessor = httpContextAccessor;
+    }
+
+    /// <inheritdoc />
+    public string GenerateCorrelationId()
+    {
+        return _httpContextAccessor.HttpContext?.TraceIdentifier;
     }
 }

@@ -4,7 +4,7 @@ namespace MvcSample;
 
 public class DoNothingCorrelationIdProvider : ICorrelationIdProvider
 {
-    public string GenerateCorrelationId(HttpContext context)
+    public string GenerateCorrelationId()
     {
         return null;
     }

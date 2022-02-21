@@ -1,5 +1,4 @@
 ﻿using CorrelationId.Abstractions;
-using Microsoft.AspNetCore.Http;
 
 namespace CorrelationId.Providers;
 
@@ -9,7 +8,7 @@ namespace CorrelationId.Providers;
 public class GuidCorrelationIdProvider : ICorrelationIdProvider
 {
     /// <inheritdoc />
-    public string GenerateCorrelationId(HttpContext httpContext)
+    public string GenerateCorrelationId()
     {
         return Guid.NewGuid().ToString();
     }

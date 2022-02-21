@@ -35,7 +35,7 @@ builder.Services.AddDefaultCorrelationId(options =>
     options.LogLevelOptions = new CorrelationIdLogLevelOptions
     {
         //set log level severity
-        FoundCorrelationIdHeader = LogLevel.Debug,  
+        FoundCorrelationIdHeader = LogLevel.Debug,
         MissingCorrelationIdHeader = LogLevel.Debug
     };
 });

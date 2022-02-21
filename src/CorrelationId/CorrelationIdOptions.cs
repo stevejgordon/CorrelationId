@@ -1,5 +1,4 @@
 ﻿using CorrelationId.Abstractions;
-using Microsoft.Extensions.Logging;
 
 namespace CorrelationId;
 
@@ -19,6 +18,11 @@ public class CorrelationIdOptions
     public const string LoggerScopeKey = "CorrelationId";
 
     private string _responseHeader;
+
+    /// <summary>
+    ///     Defines the log level severity
+    /// </summary>
+    public CorrelationIdLogLevelOptions LogLevelOptions = new();
 
     /// <summary>
     ///     The name of the header from which the Correlation ID is read from the request.
@@ -91,11 +95,6 @@ public class CorrelationIdOptions
     ///     When set, this function will be used instead of the registered <see cref="ICorrelationIdProvider" />.
     /// </summary>
     public Func<string> CorrelationIdGenerator { get; set; }
-
-    /// <summary>
-    ///     Defines the log level severity
-    /// </summary>
-    public CorrelationIdLogLevelOptions LogLevelOptions = new();
 
     ///// <summary>
     /////     <para>

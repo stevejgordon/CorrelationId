@@ -1,5 +1,6 @@
 ﻿using CorrelationId.Abstractions;
 using CorrelationId.Providers;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace CorrelationId.DependencyInjection;
@@ -67,6 +68,7 @@ public static class CorrelationIdBuilderExtensions
         if (builder.Services.Any(x => x.ServiceType == typeof(ICorrelationIdProvider)))
             throw new InvalidOperationException("A provider has already been added.");
 
+        builder.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         builder.Services.TryAddSingleton<ICorrelationIdProvider, TraceIdCorrelationIdProvider>();
 
         return builder;

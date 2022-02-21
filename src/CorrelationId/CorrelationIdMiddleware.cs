@@ -77,7 +77,7 @@ public class CorrelationIdMiddleware
             Log.MissingCorrelationIdHeader(_logger, _options.LogLevelOptions.MissingCorrelationIdHeader);
 
         if (_options.IgnoreRequestHeader || RequiresGenerationOfCorrelationId(hasCorrelationIdHeader, cid))
-            correlationId = GenerateCorrelationId(httpContext);
+            correlationId = GenerateCorrelationId();
 
         if (!string.IsNullOrEmpty(correlationId) && _options.UpdateTraceIdentifier)
         {
@@ -128,7 +128,7 @@ public class CorrelationIdMiddleware
         return !idInHeader || StringValues.IsNullOrEmpty(idFromHeader);
     }
 
-    private string GenerateCorrelationId(HttpContext ctx)
+    private string GenerateCorrelationId()
     {
         string correlationId;
 
@@ -139,7 +139,7 @@ public class CorrelationIdMiddleware
             return correlationId;
         }
 
-        correlationId = _correlationIdProvider.GenerateCorrelationId(ctx);
+        correlationId = _correlationIdProvider.GenerateCorrelationId();
         Log.GeneratedHeaderUsingProvider(_logger, correlationId, _correlationIdProvider.GetType());
         return correlationId;
     }

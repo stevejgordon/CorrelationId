@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-
-namespace CorrelationId.Abstractions;
+﻿namespace CorrelationId.Abstractions;
 
 /// <summary>
 ///     Defines a provider which can be used to generate correlation IDs.
@@ -10,7 +8,6 @@ public interface ICorrelationIdProvider
     /// <summary>
     ///     Generates a correlation ID string for the current request.
     /// </summary>
-    /// <param name="httpContext">The <see cref="HttpContext" /> of the current request.</param>
     /// <returns>A string representing the correlation ID.</returns>
-    string GenerateCorrelationId(HttpContext httpContext);
+    string GenerateCorrelationId();
 }
