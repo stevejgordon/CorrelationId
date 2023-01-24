@@ -85,6 +85,8 @@ namespace CorrelationId
         /// A function that returns the correlation ID in cases where no correlation ID is retrieved from the request header. It can be used to customise the correlation ID generation.
         /// When set, this function will be used instead of the registered <see cref="ICorrelationIdProvider"/>.
         /// </summary>
+        ///
+        public bool EnableDiagnostics { get; set; } = true;
         public Func<string> CorrelationIdGenerator { get; set; }
     }
 }

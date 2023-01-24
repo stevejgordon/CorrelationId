@@ -44,11 +44,12 @@ namespace CorrelationId
         /// <param name="correlationContextFactory">The <see cref="ICorrelationContextFactory"/> which can create a <see cref="CorrelationContext"/>.</param>
         public async Task Invoke(HttpContext context, ICorrelationContextFactory correlationContextFactory)
         {
-            Log.CorrelationIdProcessingBegin(_logger);
+            if (_options.EnableDiagnostics)
+                Log.CorrelationIdProcessingBegin(_logger, _options.EnableDiagnostics);
 
             if (_correlationIdProvider is null)
             {
-                Log.MissingCorrelationIdProvider(_logger);
+                Log.MissingCorrelationIdProvider(_logger, _options.EnableDiagnostics);
 
                 throw new InvalidOperationException("No 'ICorrelationIdProvider' has been registered. You must either add the correlation ID services" +
                                                     " using the 'AddDefaultCorrelationId' extension method or you must register a suitable provider using the" +
@@ -60,7 +61,7 @@ namespace CorrelationId
 
             if (!hasCorrelationIdHeader && _options.EnforceHeader)
             {
-                Log.EnforcedCorrelationIdHeaderMissing(_logger);
+                Log.EnforcedCorrelationIdHeaderMissing(_logger, _options.EnableDiagnostics);
 
                 context.Response.StatusCode = StatusCodes.Status400BadRequest;
                 await context.Response.WriteAsync($"The '{_options.RequestHeader}' request header is required, but was not found.");
@@ -71,11 +72,11 @@ namespace CorrelationId
 
             if (hasCorrelationIdHeader)
             {
-                Log.FoundCorrelationIdHeader(_logger, correlationId);
+                Log.FoundCorrelationIdHeader(_logger, correlationId, _options.EnableDiagnostics);
             }
             else
             {
-                Log.MissingCorrelationIdHeader(_logger);
+                Log.MissingCorrelationIdHeader(_logger, _options.EnableDiagnostics);
             }
 
             if (_options.IgnoreRequestHeader || RequiresGenerationOfCorrelationId(hasCorrelationIdHeader, cid))
@@ -85,12 +86,12 @@ namespace CorrelationId
 
             if (!string.IsNullOrEmpty(correlationId) && _options.UpdateTraceIdentifier)
             {
-                Log.UpdatingTraceIdentifier(_logger);
+                Log.UpdatingTraceIdentifier(_logger, _options.EnableDiagnostics);
 
                 context.TraceIdentifier = correlationId;
             }
 
-            Log.CreatingCorrelationContext(_logger);
+            Log.CreatingCorrelationContext(_logger, _options.EnableDiagnostics);
             correlationContextFactory.Create(correlationId, _options.RequestHeader);
 
             if (_options.IncludeInResponse && !string.IsNullOrEmpty(correlationId))
@@ -100,14 +101,14 @@ namespace CorrelationId
                 {
                     if (!context.Response.Headers.ContainsKey(_options.ResponseHeader))
                     {
-                        Log.WritingCorrelationIdResponseHeader(_logger, _options.ResponseHeader, correlationId);
+                        Log.WritingCorrelationIdResponseHeader(_logger, _options.ResponseHeader, correlationId,_options.EnableDiagnostics);
                         context.Response.Headers.Add(_options.ResponseHeader, correlationId);
                     }
 
                     return Task.CompletedTask;
                 });
             }
-            
+
             if (_options.AddToLoggingScope && !string.IsNullOrEmpty(_options.LoggingScopeKey) && !string.IsNullOrEmpty(correlationId))
             {
                 using (_logger.BeginScope(new Dictionary<string, object>
@@ -115,17 +116,17 @@ namespace CorrelationId
                     [_options.LoggingScopeKey] = correlationId
                 }))
                 {
-                    Log.CorrelationIdProcessingEnd(_logger, correlationId);
+                    Log.CorrelationIdProcessingEnd(_logger, correlationId, _options.EnableDiagnostics);
                     await _next(context);
                 }
             }
             else
             {
-                Log.CorrelationIdProcessingEnd(_logger, correlationId);
+                Log.CorrelationIdProcessingEnd(_logger, correlationId, _options.EnableDiagnostics);
                 await _next(context);
             }
 
-            Log.DisposingCorrelationContext(_logger);
+            Log.DisposingCorrelationContext(_logger, _options.EnableDiagnostics);
             correlationContextFactory.Dispose();
         }
 
@@ -139,12 +140,12 @@ namespace CorrelationId
             if (_options.CorrelationIdGenerator is object)
             {
                 correlationId = _options.CorrelationIdGenerator();
-                Log.GeneratedHeaderUsingGeneratorFunction(_logger, correlationId);
+                Log.GeneratedHeaderUsingGeneratorFunction(_logger, correlationId, _options.EnableDiagnostics);
                 return correlationId;
             }
 
             correlationId = _correlationIdProvider.GenerateCorrelationId(ctx);
-            Log.GeneratedHeaderUsingProvider(_logger, correlationId, _correlationIdProvider.GetType());
+            Log.GeneratedHeaderUsingProvider(_logger, correlationId, _correlationIdProvider.GetType(), _options.EnableDiagnostics);
             return correlationId;
         }
 
@@ -229,35 +230,75 @@ namespace CorrelationId
                 EventIds.WritingCorrelationIdResponseHeader,
                 "Writing correlation ID response header {ResponseHeader} with value {CorrelationId}");
 
-            public static void CorrelationIdProcessingBegin(ILogger logger)
+            public static void CorrelationIdProcessingBegin(ILogger logger, bool enableDiagnostics)
             {
-                if(logger.IsEnabled(LogLevel.Debug)) _correlationIdProcessingBegin(logger, null);
+                if (logger.IsEnabled(LogLevel.Debug) && enableDiagnostics) _correlationIdProcessingBegin(logger, null);
             }
 
-            public static void CorrelationIdProcessingEnd(ILogger logger, string correlationId)
+            public static void CorrelationIdProcessingEnd(ILogger logger, string correlationId, bool enableDiagnostics)
             {
-                if (logger.IsEnabled(LogLevel.Debug)) _correlationIdProcessingEnd(logger, correlationId, null);
+                if (logger.IsEnabled(LogLevel.Debug) && enableDiagnostics) _correlationIdProcessingEnd(logger, correlationId, null);
             }
 
-            public static void MissingCorrelationIdProvider(ILogger logger) => _missingCorrelationIdProvider(logger, null);
+            public static void MissingCorrelationIdProvider(ILogger logger, bool enableDiagnostics)
+            {
+                if (enableDiagnostics)
+                    _missingCorrelationIdProvider(logger, null);
+            }
 
-            public static void EnforcedCorrelationIdHeaderMissing(ILogger logger) => _enforcedCorrelationIdHeaderMissing(logger, null);
+            public static void EnforcedCorrelationIdHeaderMissing(ILogger logger, bool enableDiagnostics)
+            {
+                if (enableDiagnostics)
+                    _enforcedCorrelationIdHeaderMissing(logger, null);
+            }
 
-            public static void FoundCorrelationIdHeader(ILogger logger, string correlationId) => _foundCorrelationIdHeader(logger, correlationId, null);
+            public static void FoundCorrelationIdHeader(ILogger logger, string correlationId, bool enableDiagnostics)
+            {
+                if (enableDiagnostics)
+                    _foundCorrelationIdHeader(logger, correlationId, null);
+            }
 
-            public static void MissingCorrelationIdHeader(ILogger logger) => _missingCorrelationIdHeader(logger, null);
+            public static void MissingCorrelationIdHeader(ILogger logger, bool enableDiagnostics)
+            {
+                if (enableDiagnostics)
+                    _missingCorrelationIdHeader(logger, null);
+            }
 
-            public static void GeneratedHeaderUsingGeneratorFunction(ILogger logger, string correlationId) => _generatedHeaderUsingGeneratorFunction(logger, correlationId, null);
+            public static void GeneratedHeaderUsingGeneratorFunction(ILogger logger, string correlationId, bool enableDiagnostics)
+            {
+                if (enableDiagnostics)
+                    _generatedHeaderUsingGeneratorFunction(logger, correlationId, null);
+            }
 
-            public static void GeneratedHeaderUsingProvider(ILogger logger, string correlationId, Type type) => _generatedHeaderUsingProvider(logger, correlationId, type, null);
+            public static void GeneratedHeaderUsingProvider(ILogger logger, string correlationId, Type type, bool enableDiagnostics)
+            {
+                if (enableDiagnostics)
+                    _generatedHeaderUsingProvider(logger, correlationId, type, null);
+            }
 
-            public static void UpdatingTraceIdentifier(ILogger logger) => _updatingTraceIdentifier(logger, null);
+            public static void UpdatingTraceIdentifier(ILogger logger, bool enableDiagnostics)
+            {
+                if (enableDiagnostics)
+                    _updatingTraceIdentifier(logger, null);
+            }
 
-            public static void CreatingCorrelationContext(ILogger logger) => _creatingCorrelationContext(logger, null);
+            public static void CreatingCorrelationContext(ILogger logger, bool enableDiagnostics)
+            {
+                if (enableDiagnostics)
+                    _creatingCorrelationContext(logger, null);
+            }
 
-            public static void DisposingCorrelationContext(ILogger logger) => _disposingCorrelationContext(logger, null);
+            public static void DisposingCorrelationContext(ILogger logger, bool enableDiagnostics)
+            {
+                if (enableDiagnostics)
+                    _disposingCorrelationContext(logger, null);
+            }
 
-            public static void WritingCorrelationIdResponseHeader(ILogger logger, string headerName, string correlationId) => _writingCorrelationIdResponseHeader(logger, headerName, correlationId, null);
+            public static void WritingCorrelationIdResponseHeader(ILogger logger, string headerName, string correlationId, bool enableDiagnostics)
+            {
+                if (enableDiagnostics)
+                    _writingCorrelationIdResponseHeader(logger, headerName, correlationId, null);
+            }
         }
     }
 }
