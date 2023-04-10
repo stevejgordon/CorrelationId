@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CorrelationId.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Net48CorrelationId;
 using Xunit;
 using Xunit.Abstractions;
@@ -11,12 +12,10 @@ namespace CorrelationId.Net48.Tests
 {
     public class HttpClientBuilderTests
     {
-        private readonly ITestOutputHelper _testOutputHelper;
         private readonly Net48MvcSampleApiClient _net48MvcSampleApiClient;
 
         public HttpClientBuilderTests(ITestOutputHelper testOutputHelper)
         {
-            _testOutputHelper = testOutputHelper;
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddDefaultCorrelationId(options =>
             {
@@ -31,6 +30,14 @@ namespace CorrelationId.Net48.Tests
             var httpClientBuilder = serviceCollection.AddHttpClient<Net48MvcSampleApiClient>();
 
             serviceCollection.UseCorrelationIdMiddleware(httpClientBuilder);
+            
+            var loggerFactory = LoggerFactory.Create(builder =>
+            {
+                builder.AddXUnit(testOutputHelper);
+                builder.SetMinimumLevel(LogLevel.Debug);
+            });
+            serviceCollection.AddSingleton(_ => loggerFactory.CreateLogger<CorrelationIdMiddleware>());
+            
             var serviceProvider = serviceCollection.BuildServiceProvider();
             _net48MvcSampleApiClient = serviceProvider.GetService<Net48MvcSampleApiClient>();
         }
@@ -42,8 +49,6 @@ namespace CorrelationId.Net48.Tests
             var responsePayload = response.Content.ReadAsStringAsync().Result;
 
             Assert.True(response.IsSuccessStatusCode, responsePayload);
-            
-            _testOutputHelper.WriteLine(string.Join(", ", responsePayload));
             
             Assert.True(Guid.TryParse(responsePayload.Replace("\"", string.Empty), out _));
             

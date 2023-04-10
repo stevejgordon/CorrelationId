@@ -24,7 +24,11 @@ namespace Net48MvcSample
 
             serviceCollection.UseCorrelationIdMiddleware();
 
-            var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+            var loggerFactory = LoggerFactory.Create(builder =>
+            {
+                builder.AddConsole();
+                builder.SetMinimumLevel(LogLevel.Debug);
+            });
             serviceCollection.AddSingleton(_ => loggerFactory.CreateLogger<CorrelationIdMiddleware>());
             
             var serviceProvider = serviceCollection.BuildServiceProvider();
