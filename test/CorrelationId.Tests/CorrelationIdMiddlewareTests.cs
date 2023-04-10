@@ -448,7 +448,7 @@ namespace CorrelationId.Tests
                 {
                     app.UseCorrelationId();
 
-                    app.Use(async (ctx, next) =>
+                    app.Use(async (HttpContext ctx, Func<Task> _) =>
                     {
                         var accessor = ctx.RequestServices.GetService<ICorrelationContextAccessor>();
                         ctx.Response.StatusCode = StatusCodes.Status200OK;
@@ -463,7 +463,7 @@ namespace CorrelationId.Tests
 
             var body = await response.Content.ReadAsStringAsync();
 
-            Assert.Equal(body, customHeader);
+            Assert.Equal(customHeader, body);
         }
 
         [Fact]
@@ -485,7 +485,7 @@ namespace CorrelationId.Tests
 
                     app.UseCorrelationId();
 
-                    app.Use((ctx, next) =>
+                    app.Use((HttpContext ctx, Func<Task> _) =>
                     {
                         traceIdentifier = ctx.TraceIdentifier;
                         return Task.CompletedTask;
@@ -520,7 +520,7 @@ namespace CorrelationId.Tests
 
                     app.UseCorrelationId();
 
-                    app.Use((ctx, next) =>
+                    app.Use((HttpContext ctx, Func<Task> _) =>
                     {
                         traceIdentifier = ctx.TraceIdentifier;
                         return Task.CompletedTask;
@@ -555,7 +555,7 @@ namespace CorrelationId.Tests
 
                     app.UseCorrelationId();
 
-                    app.Use((ctx, next) =>
+                    app.Use((HttpContext ctx, Func<Task> _) =>
                     {
                         traceIdentifier = ctx.TraceIdentifier;
                         return Task.CompletedTask;
@@ -583,7 +583,7 @@ namespace CorrelationId.Tests
                 {
                     app.UseCorrelationId();
 
-                    app.Use((ctx, next) =>
+                    app.Use((HttpContext ctx, Func<Task> _) =>
                     {
                         traceIdentifier = ctx.TraceIdentifier;
                         return Task.CompletedTask;
