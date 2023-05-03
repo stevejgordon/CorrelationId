@@ -16,6 +16,7 @@ namespace Net48MvcSample
             {
                 options.AddToLoggingScope = true;
                 options.IgnoreRequestHeader = false;
+                options.EnforceHeader = false;
                 options.IncludeInResponse = true;
                 options.RequestHeader = "X-Correlation-Id";
                 options.ResponseHeader = "X-Correlation-Id";

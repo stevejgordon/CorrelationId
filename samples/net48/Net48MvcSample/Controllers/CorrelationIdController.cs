@@ -1,6 +1,5 @@
 ﻿using System.Web;
 using System.Web.Http;
-using CorrelationId;
 
 namespace Net48MvcSample.Controllers
 {
