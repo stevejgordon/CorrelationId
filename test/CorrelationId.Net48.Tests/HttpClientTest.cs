@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -22,10 +23,7 @@ namespace CorrelationId.Net48.Tests
             client.BaseAddress = new Uri("http://localhost:31488");
 
             var response = await client.GetAsync("/api/CorrelationId");
-            var responsePayload = response.Content.ReadAsStringAsync().Result;
-
-            Assert.True(response.IsSuccessStatusCode, responsePayload);
-            Assert.Equal("null", responsePayload);
+            Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
             
             Assert.Single(response.Headers.GetValues("X-Correlation-Id"));
             Assert.True(Guid.TryParse(response.Headers.GetValues("X-Correlation-Id").Single(), out _));

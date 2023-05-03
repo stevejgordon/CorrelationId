@@ -46,7 +46,7 @@ namespace CorrelationId.Net48.Tests
         public async Task CallTo_Net48Service_ShouldSetCorrelationId()
         {
             var response = await _net48MvcSampleApiClient.GetAsync();
-            var responsePayload = response.Content.ReadAsStringAsync().Result;
+            var responsePayload = await response.Content.ReadAsStringAsync();
 
             Assert.True(response.IsSuccessStatusCode, responsePayload);
             
@@ -64,11 +64,11 @@ namespace CorrelationId.Net48.Tests
             Task.WaitAll(responseTask, response2Task);
             
             var response = await responseTask;
-            var responsePayload = response.Content.ReadAsStringAsync().Result;
+            var responsePayload = await response.Content.ReadAsStringAsync();
             Assert.True(response.IsSuccessStatusCode, responsePayload);
             
             var response2 = await response2Task;
-            var response2Payload = response2.Content.ReadAsStringAsync().Result;
+            var response2Payload = await response2.Content.ReadAsStringAsync();
 
             Assert.True(response2.IsSuccessStatusCode, response2Payload);
 

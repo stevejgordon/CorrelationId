@@ -87,9 +87,6 @@
         </Content>
     </ItemGroup>
     <ItemGroup>
-        <Folder Include="App_Data" />
-    </ItemGroup>
-    <ItemGroup>
       <ProjectReference Include="..\..\..\src\CorrelationId\CorrelationId.csproj">
         <Project>{865886fc-ebbe-49e1-8f49-fecd0408ef6e}</Project>
         <Name>CorrelationId</Name>
@@ -102,6 +99,8 @@
     <ItemGroup>
       <PackageReference Include="Microsoft.AspNet.WebApi.WebHost" Version="5.2.9" />
       <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="7.0.0" />
+      <PackageReference Include="NETStandard.Library" Version="2.0.3" />
+      <PackageReference Include="System.Runtime.InteropServices.RuntimeInformation" Version="4.3.0" />
     </ItemGroup>
     <PropertyGroup>
         <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
