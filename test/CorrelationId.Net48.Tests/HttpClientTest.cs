@@ -23,7 +23,7 @@ namespace CorrelationId.Net48.Tests
             client.BaseAddress = new Uri("http://localhost:31488");
 
             var response = await client.GetAsync("/api/CorrelationId");
-            Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             
             Assert.Single(response.Headers.GetValues("X-Correlation-Id"));
             Assert.True(Guid.TryParse(response.Headers.GetValues("X-Correlation-Id").Single(), out _));

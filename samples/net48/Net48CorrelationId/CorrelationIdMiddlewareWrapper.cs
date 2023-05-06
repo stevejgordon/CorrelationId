@@ -1,11 +1,13 @@
-using System.Linq;
+using System;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using CorrelationId;
 using CorrelationId.Abstractions;
-using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using AspnetHttpContext = Microsoft.AspNetCore.Http.HttpContext;
+using AspnetDefaultHttpContext = Microsoft.AspNetCore.Http.DefaultHttpContext;
 
 namespace Net48CorrelationId
 {
@@ -14,61 +16,81 @@ namespace Net48CorrelationId
     /// </summary>
     public class CorrelationIdMiddlewareWrapper : DelegatingHandler
     {
-        private readonly CorrelationIdMiddleware _correlationIdMiddleware;
         private readonly ICorrelationContextFactory _correlationContextFactory;
         private readonly IOptions<CorrelationIdOptions> _correlationIdOptions;
+        private readonly ILogger<CorrelationIdMiddlewareWrapper> _correlationIdMiddlewareLoggerWrapper;
+        private readonly ILogger<CorrelationIdMiddleware> _correlationIdMiddlewareLogger;
+        private readonly ICorrelationIdProvider _correlationIdProvider;
+        private readonly ICorrelationContextAccessor _correlationContextAccessor;
 
-        public CorrelationIdMiddlewareWrapper(CorrelationIdMiddleware correlationIdMiddleware,
-            ICorrelationContextFactory correlationContextFactory, IOptions<CorrelationIdOptions> correlationIdOptions)
+        public CorrelationIdMiddlewareWrapper(ICorrelationContextFactory correlationContextFactory,
+            IOptions<CorrelationIdOptions> correlationIdOptions,
+            ILogger<CorrelationIdMiddlewareWrapper> correlationIdMiddlewareLoggerWrapper,
+            // ReSharper disable once ContextualLoggerProblem
+            ILogger<CorrelationIdMiddleware> correlationIdMiddlewareLogger,
+            ICorrelationIdProvider correlationIdProvider, ICorrelationContextAccessor correlationContextAccessor)
         {
-            _correlationIdMiddleware = correlationIdMiddleware;
             _correlationContextFactory = correlationContextFactory;
             _correlationIdOptions = correlationIdOptions;
+            _correlationIdMiddlewareLoggerWrapper = correlationIdMiddlewareLoggerWrapper;
+            _correlationIdMiddlewareLogger = correlationIdMiddlewareLogger;
+            _correlationIdProvider = correlationIdProvider;
+            _correlationContextAccessor = correlationContextAccessor;
         }
 
         protected override async Task<HttpResponseMessage> SendAsync(
             HttpRequestMessage request,
             CancellationToken cancellationToken)
         {
-            var httpContext = GetHttpContext();
-            await _correlationIdMiddleware.Invoke(httpContext, _correlationContextFactory);
+            HttpResponseMessage response = null;
+            var correlationIdMiddleware = new CorrelationIdMiddleware(
+                context => MiddlewareActionAsync(context, request, x => response = x), _correlationIdMiddlewareLogger,
+                _correlationIdOptions, _correlationIdProvider);
+            var aspnetHttpContext = GetAspnetHttpContext();
 
-            var correlationIds =
-                httpContext.Request.Headers[_correlationIdOptions.Value.RequestHeader];
-
-            foreach (var correlationId in correlationIds)
+            if (_correlationContextAccessor.CorrelationContext == null)
             {
-                request.Headers.Add(_correlationIdOptions.Value.RequestHeader, correlationId);
+                // we should just do this to setup the context if missing
+                await correlationIdMiddleware.Invoke(aspnetHttpContext, _correlationContextFactory);
             }
-
-            var response = await base.SendAsync(request, cancellationToken);
-
-            if (!_correlationIdOptions.Value.IncludeInResponse)
+            else
             {
-                return response;
-            }
-
-            response.Headers.TryGetValues(_correlationIdOptions.Value.ResponseHeader, out var existingCorrelationIdResponseHeaders);
-            var existingCorrelationIdResponseHeadersList = existingCorrelationIdResponseHeaders?.ToList();
-
-            foreach (var correlationId in correlationIds)
-            {
-                // CorrelationId might be added both on server and client part
-                if (existingCorrelationIdResponseHeadersList != null &&
-                    existingCorrelationIdResponseHeadersList.Any(x => x == correlationId))
-                {
-                    continue;
-                }
-                
-                response.Headers.Add(_correlationIdOptions.Value.ResponseHeader, correlationId);
+                await MiddlewareActionAsync(aspnetHttpContext, request, x => response = x);
             }
 
             return response;
         }
 
-        private HttpContext GetHttpContext()
+        private async Task MiddlewareActionAsync(AspnetHttpContext aspnetHttpContext,
+            HttpRequestMessage request, Action<HttpResponseMessage> responseSetter)
         {
-            var httpContext = new DefaultHttpContext();
+            var correlationId = _correlationContextAccessor?.CorrelationContext?.CorrelationId;
+            if (!string.IsNullOrEmpty(correlationId)
+                && !request.Headers.Contains(_correlationContextAccessor.CorrelationContext.Header))
+            {
+                request.Headers.Add(_correlationContextAccessor.CorrelationContext.Header,
+                    _correlationContextAccessor.CorrelationContext.CorrelationId);
+            }
+
+            var response = await base.SendAsync(request, aspnetHttpContext.RequestAborted);
+
+            // context.Response.OnStarting is not executed on .net FW
+            if (_correlationIdOptions.Value.IncludeInResponse &&
+                !string.IsNullOrEmpty(correlationId) &&
+                !response.Headers.Contains(_correlationIdOptions.Value.ResponseHeader))
+            {
+                _correlationIdMiddlewareLoggerWrapper.LogDebug(
+                    "Writing correlation ID response header {ResponseHeader} with value {CorrelationId}",
+                    _correlationIdOptions.Value.ResponseHeader, correlationId);
+                response.Headers.Add(_correlationIdOptions.Value.ResponseHeader, correlationId);
+            }
+            
+            responseSetter.Invoke(response);
+        }
+
+        private AspnetHttpContext GetAspnetHttpContext()
+        {
+            var httpContext = new AspnetDefaultHttpContext();
 
             if (System.Web.HttpContext.Current == null)
             {

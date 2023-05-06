@@ -81,6 +81,11 @@ namespace CorrelationId
             if (_options.IgnoreRequestHeader || RequiresGenerationOfCorrelationId(hasCorrelationIdHeader, cid))
             {
                 correlationId = GenerateCorrelationId(context);
+                if (!string.IsNullOrEmpty(correlationId) 
+                    && !context.Request.Headers.ContainsKey(_options.RequestHeader))
+                {
+                    context.Request.Headers.Add(_options.RequestHeader, correlationId);
+                }
             }
 
             if (!string.IsNullOrEmpty(correlationId) && _options.UpdateTraceIdentifier)

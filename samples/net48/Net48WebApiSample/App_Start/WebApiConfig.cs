@@ -1,6 +1,6 @@
 ﻿using System.Web.Http;
 
-namespace Net48MvcSample
+namespace Net48WebApiSample
 {
     public static class WebApiConfig
     {

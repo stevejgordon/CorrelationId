@@ -1,16 +1,15 @@
 ﻿using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Web.Http;
+using System.Web.Http.Results;
 using CorrelationId;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
-namespace MvcSample.Controllers
+namespace Net48WebApiSample.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class CorrelationIdController : ControllerBase
+    public class CorrelationIdController : ApiController
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IOptions<CorrelationIdOptions> _correlationIdOptions;
@@ -22,10 +21,15 @@ namespace MvcSample.Controllers
             _correlationIdOptions = correlationIdOptions;
         }
 
-        [HttpGet]
-        public async Task<IResult> Get()
+        public async Task<IHttpActionResult> Get()
         {
-            var correlationId = Request.Headers[_correlationIdOptions.Value.RequestHeader].SingleOrDefault();
+            Request.Headers.TryGetValues(_correlationIdOptions.Value.RequestHeader, out var correlationIds);
+            var correlationId = correlationIds.SingleOrDefault();
+
+            if (correlationId == null)
+            {
+                return new StatusCodeResult(HttpStatusCode.NoContent, Request);
+            }
 
             var client =
                 _httpClientFactory.CreateClient("MyClient"); // this client will attach the correlation ID header
@@ -34,14 +38,14 @@ namespace MvcSample.Controllers
 
             innerResponse.Headers.TryGetValues(_correlationIdOptions.Value.RequestHeader,
                 out var innerResponseCorrelationIds);
-            var innerResponseCorrelationId = innerResponseCorrelationIds?.SingleOrDefault();
+            var innerResponseCorrelationId = innerResponseCorrelationIds.SingleOrDefault();
 
             if (innerResponseCorrelationId != correlationId)
             {
-                return Results.Conflict();
+                return Conflict();
             }
 
-            return Results.Ok(correlationId);
+            return Ok(correlationId);
         }
     }
 }

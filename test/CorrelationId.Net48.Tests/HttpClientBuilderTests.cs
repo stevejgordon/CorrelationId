@@ -2,9 +2,9 @@
 using System.Linq;
 using System.Threading.Tasks;
 using CorrelationId.DependencyInjection;
+using CorrelationId.HttpClient;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Net48CorrelationId;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -26,17 +26,16 @@ namespace CorrelationId.Net48.Tests
                 options.ResponseHeader = "X-Correlation-Id";
                 options.UpdateTraceIdentifier = false;
             });
-            
-            var httpClientBuilder = serviceCollection.AddHttpClient<Net48MvcSampleApiClient>();
 
-            serviceCollection.UseCorrelationIdMiddleware(httpClientBuilder);
-            
-            var loggerFactory = LoggerFactory.Create(builder =>
+            serviceCollection
+                .AddHttpClient<Net48MvcSampleApiClient>()
+                .AddCorrelationIdForwarding();
+
+            serviceCollection.AddLogging(loggingBuilder =>
             {
-                builder.AddXUnit(testOutputHelper);
-                builder.SetMinimumLevel(LogLevel.Debug);
+                loggingBuilder.AddXUnit(testOutputHelper);
+                loggingBuilder.SetMinimumLevel(LogLevel.Debug);
             });
-            serviceCollection.AddSingleton(_ => loggerFactory.CreateLogger<CorrelationIdMiddleware>());
             
             var serviceProvider = serviceCollection.BuildServiceProvider();
             _net48MvcSampleApiClient = serviceProvider.GetService<Net48MvcSampleApiClient>();

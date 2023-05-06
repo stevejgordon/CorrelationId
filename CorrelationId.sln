@@ -30,7 +30,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "net6", "net6", "{E28C5481-A
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "net48", "net48", "{0D3CBD88-90B9-4364-9DE4-CA1FCC9CB023}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Net48MvcSample", "samples\net48\Net48MvcSample\Net48MvcSample.csproj", "{DED5BFD9-29F6-4291-B863-1995C33D686B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Net48WebApiSample", "samples\net48\Net48WebApiSample\Net48WebApiSample.csproj", "{DED5BFD9-29F6-4291-B863-1995C33D686B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CorrelationId.Net48.Tests", "test\CorrelationId.Net48.Tests\CorrelationId.Net48.Tests.csproj", "{A4137EAE-590B-476C-838F-A2D4A45AAE4A}"
 EndProject

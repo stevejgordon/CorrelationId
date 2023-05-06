@@ -9,8 +9,8 @@
         <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
         <OutputType>Library</OutputType>
         <AppDesignerFolder>Properties</AppDesignerFolder>
-        <RootNamespace>Net48MvcSample</RootNamespace>
-        <AssemblyName>Net48MvcSample</AssemblyName>
+        <RootNamespace>Net48WebApiSample</RootNamespace>
+        <AssemblyName>Net48WebApiSample</AssemblyName>
         <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
         <MvcBuildViews>false</MvcBuildViews>
         <UseIISExpress>true</UseIISExpress>
@@ -42,6 +42,9 @@
     </PropertyGroup>
     <ItemGroup>
         <Reference Include="Microsoft.CSharp" />
+        <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions">
+          <HintPath>..\..\..\..\..\Users\miha39\.nuget\packages\microsoft.extensions.dependencyinjection.abstractions\7.0.0\lib\netstandard2.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
+        </Reference>
         <Reference Include="mscorlib" />
         <Reference Include="System" />
         <Reference Include="System.Data" />
@@ -70,10 +73,12 @@
     <ItemGroup>
         <Compile Include="App_Start\WebApiConfig.cs" />
         <Compile Include="Controllers\CorrelationIdController.cs" />
-        <Compile Include="CorrelationIdFakeDependencyInjection.cs" />
+        <Compile Include="DependencyInjection.cs" />
+        <Compile Include="Extensions\ServiceCollectionExtensions.cs" />
         <Compile Include="Global.asax.cs">
             <DependentUpon>Global.asax</DependentUpon>
         </Compile>
+        <Compile Include="NoOpDelegatingHandler.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
     </ItemGroup>
     <ItemGroup>
@@ -98,6 +103,7 @@
     </ItemGroup>
     <ItemGroup>
       <PackageReference Include="Microsoft.AspNet.WebApi.WebHost" Version="5.2.9" />
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
       <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="7.0.0" />
       <PackageReference Include="NETStandard.Library" Version="2.0.3" />
       <PackageReference Include="System.Runtime.InteropServices.RuntimeInformation" Version="4.3.0" />
