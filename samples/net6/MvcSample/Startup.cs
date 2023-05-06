@@ -26,26 +26,20 @@ namespace MvcSample
             services.AddHttpClient("MyClient")
                 .AddCorrelationIdForwarding() // add the handler to attach the correlation ID to outgoing requests for this named client
                 .AddHttpMessageHandler<NoOpDelegatingHandler>();
-                       
-            // Example of adding default correlation ID (using the GUID generator) services
-            // As shown here, options can be configured via the configure delegate overload
+
             services.AddDefaultCorrelationId(options =>
-            { 
-                options.CorrelationIdGenerator = () => "Foo";
+            {
                 options.AddToLoggingScope = true;
-                options.EnforceHeader = true;
+                options.EnforceHeader = false;
                 options.IgnoreRequestHeader = false;
                 options.IncludeInResponse = true;
-                options.RequestHeader = "My-Custom-Correlation-Id";
+                options.RequestHeader = "X-Correlation-Id";
                 options.ResponseHeader = "X-Correlation-Id";
                 options.UpdateTraceIdentifier = false;
             });
 
-            // Example of registering a custom correlation ID provider
-            //services.AddCorrelationId().WithCustomProvider<DoNothingCorrelationIdProvider>();
-            
             services.AddControllers();
-            }
+        }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -63,10 +57,7 @@ namespace MvcSample
 
             app.UseAuthorization();
 
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
+            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
     }
 }
