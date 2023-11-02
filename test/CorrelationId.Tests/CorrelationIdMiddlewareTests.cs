@@ -19,6 +19,118 @@ namespace CorrelationId.Tests
 {
     public class CorrelationIdMiddlewareTests
     {
+        [Theory]
+        [InlineData("/health/ready?edata=test")]
+        [InlineData("/health/ready")]
+        [InlineData("/health/live")]
+        [InlineData("/management/bundle")]
+        [InlineData("/metrics")]
+        [InlineData("/health")]
+        public async Task DoesNotThrow_WhenHealthCheckProbeIsIncluded(string targetEndpoint)
+        {
+            Exception exception = null;
+
+            var builder = new WebHostBuilder()
+                .Configure(app =>
+                {
+                    app.Use(async (ctx, next) =>
+                    {
+                        try
+                        {
+                            await next.Invoke();
+                        }
+                        catch (Exception e)
+                        {
+                            exception = e;
+                        }
+                    });
+
+                    app.UseCorrelationId();
+                })
+                .ConfigureServices(sc => sc.AddDefaultCorrelationId(options =>
+                {
+                    options.ExcludeHealthProbes = false;
+                }));
+
+            using var server = new TestServer(builder);
+
+            await server.CreateClient().GetAsync(targetEndpoint);
+
+            Assert.Null(exception);
+        }
+        
+        [Theory]
+        [InlineData("/health/ready?edata=test")]
+        [InlineData("/health/ready")]
+        [InlineData("/health/live")]
+        [InlineData("/management/bundle")]
+        [InlineData("/metrics")]
+        [InlineData("/health")]
+        public async Task DoesNotThrow_WhenHealthCheckProbeIsExcluded(string targetEndpoint)
+        {
+            Exception exception = null;
+
+            var builder = new WebHostBuilder()
+                .Configure(app =>
+                {
+                    app.Use(async (ctx, next) =>
+                    {
+                        try
+                        {
+                            await next.Invoke();
+                        }
+                        catch (Exception e)
+                        {
+                            exception = e;
+                        }
+                    });
+
+                    app.UseCorrelationId();
+                })
+                .ConfigureServices(sc => sc.AddDefaultCorrelationId());
+
+            using var server = new TestServer(builder);
+
+            await server.CreateClient().GetAsync(targetEndpoint);
+
+            Assert.Null(exception);
+        }
+        
+        [Fact]
+        public async Task DoesNotThrow_WhenHealthCheckProbeIsExcludedWithCustomEndpoint()
+        {
+            Exception exception = null;
+            var customEndpoint = "notThisEndpoint";
+
+            var builder = new WebHostBuilder()
+                .Configure(app =>
+                {
+                    app.Use(async (ctx, next) =>
+                    {
+                        try
+                        {
+                            await next.Invoke();
+                        }
+                        catch (Exception e)
+                        {
+                            exception = e;
+                        }
+                    });
+
+                    app.UseCorrelationId();
+                })
+                .ConfigureServices(sc => sc.AddDefaultCorrelationId(options =>
+                {
+                    options.EndpointExclusion.Add(customEndpoint);
+                }));
+
+            using var server = new TestServer(builder);
+
+            await server.CreateClient().GetAsync($"/{customEndpoint}");
+
+            Assert.Null(exception);
+        }
+        
         [Fact]
         public async Task Throws_WhenCorrelationIdProviderIsNotRegistered()
         {

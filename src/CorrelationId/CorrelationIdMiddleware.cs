@@ -44,6 +44,8 @@ namespace CorrelationId
         /// <param name="correlationContextFactory">The <see cref="ICorrelationContextFactory"/> which can create a <see cref="CorrelationContext"/>.</param>
         public async Task Invoke(HttpContext context, ICorrelationContextFactory correlationContextFactory)
         {
+            await HealthCheckProcess(context);
+            
             Log.CorrelationIdProcessingBegin(_logger);
 
             if (_correlationIdProvider is null)
@@ -127,6 +129,30 @@ namespace CorrelationId
 
             Log.DisposingCorrelationContext(_logger);
             correlationContextFactory.Dispose();
+        }
+        
+        private async Task HealthCheckProcess(HttpContext context)
+        {
+            if (_options.ExcludeHealthProbes && context.Request.Path.HasValue)
+            {
+                if (Uri.TryCreate(context.Request.Path.Value, UriKind.Absolute, out Uri uriRawPath))
+                {
+                    var uriPath = uriRawPath.PathAndQuery.Contains('?')
+                        ? uriRawPath.PathAndQuery.Split('?')[0]
+                        : uriRawPath.PathAndQuery;
+
+                    if (_options.EndpointExclusion.Exists(_ => uriPath.Contains(_, StringComparison.OrdinalIgnoreCase)))
+                    {
+                        await _next(context);
+                    }
+                }
+
+                if (_options.EndpointExclusion.Exists(_ =>
+                        context.Request.Path.Value.Contains(_, StringComparison.OrdinalIgnoreCase)))
+                {
+                    await _next(context);
+                }
+            }
         }
 
         private static bool RequiresGenerationOfCorrelationId(bool idInHeader, StringValues idFromHeader) =>
