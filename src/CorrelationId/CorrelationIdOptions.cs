@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using CorrelationId.Abstractions;
 
 namespace CorrelationId
@@ -86,5 +87,20 @@ namespace CorrelationId
         /// When set, this function will be used instead of the registered <see cref="ICorrelationIdProvider"/>.
         /// </summary>
         public Func<string> CorrelationIdGenerator { get; set; }
+        /// <summary>
+        /// <para>
+        /// Controls whether the CorrelationId or TraceIdentifier is generated for Health Check probes.
+        /// </para>
+        /// <para>Default: false</para>
+        /// </summary>
+        public bool ExcludeHealthProbes { get; set; } = true;
+
+        /// <summary>
+        /// <para>
+        /// Default Health Check and metric probe names.
+        /// </para>
+        /// <para>Defaults: "ready", "live", "health", "metric", "management"</para>
+        /// </summary>
+        public List<string> EndpointExclusion { get; set; } = new List<string> { "ready", "live", "health", "metric", "management" };
     }
 }
